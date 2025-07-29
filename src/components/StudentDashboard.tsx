@@ -375,66 +375,81 @@ const StudentDashboard: React.FC = () => {
             </div>
 
             {/* Search Books Section */}
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Search Books</h2>
-              <div className="mb-4 flex flex-col sm:flex-row gap-4">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search books by title, author, or ISBN..."
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-                <div className="relative sm:w-48">
-                  <select
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full appearance-none px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white cursor-pointer"
-                  >
-                    <option value="all">All Categories</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.name}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </select>
-                  <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <div className="bg-white rounded-lg shadow flex flex-col h-[calc(100vh-400px)]">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Search Books</h2>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search books by title, author, or ISBN..."
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div className="relative sm:w-48">
+                    <select
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      className="w-full appearance-none px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white cursor-pointer"
+                    >
+                      <option value="all">All Categories</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.name}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {books.map((book) => (
-                  <div 
-                    key={book.id} 
-                    className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors duration-200 hover:shadow-md"
-                    onClick={() => handleBookClick(book)}
-                  >
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-gray-900">{book.title}</h3>
-                      {book.category && (
-                        <span className="text-xs px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full">
-                          {book.category}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-sm text-gray-600 mb-2">by {book.author}</p>
-                    <p className="text-sm text-gray-500 mb-2">ISBN: {book.isbn}</p>
-                    <div className="flex justify-between items-center">
-                      <span className={`text-sm px-2 py-1 rounded ${
-                        book.availableCopies > 0 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {book.availableCopies > 0 ? 'Available' : 'Not Available'}
-                      </span>
-                      <span className="text-sm text-gray-500">
-                        {book.availableCopies}/{book.totalCopies} copies
-                      </span>
-                    </div>
+              <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+                {books.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {books.map((book) => (
+                      <div 
+                        key={book.id} 
+                        className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors duration-200 hover:shadow-md"
+                        onClick={() => handleBookClick(book)}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-semibold text-gray-900">{book.title}</h3>
+                          {book.category && (
+                            <span className="text-xs px-2 py-1 bg-indigo-100 text-indigo-800 rounded-full">
+                              {book.category}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">by {book.author}</p>
+                        <p className="text-sm text-gray-500 mb-2">ISBN: {book.isbn}</p>
+                        <div className="flex justify-between items-center">
+                          <span className={`text-sm px-2 py-1 rounded ${
+                            book.availableCopies > 0 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {book.availableCopies > 0 ? 'Available' : 'Not Available'}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {book.availableCopies}/{book.totalCopies} copies
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <BookOpen className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Books In College Library</h3>
+                    <p className="text-gray-600">The library collection is currently empty.</p>
+                    <p className="text-sm text-gray-400 mt-2">Please contact your librarian to add books to the collection.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
