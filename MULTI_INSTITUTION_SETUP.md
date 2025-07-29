@@ -1,8 +1,8 @@
 # Multi-Institution BookZone Database Setup
 
 ## Project Details
-- **URL**: https://glhwrkvcfrbyjocrigyo.supabase.co
-- **Anon Key**: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdsaHdya3ZjZnJieWpvY3JpZ3lvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM3MjE5NTQsImV4cCI6MjA2OTI5Nzk1NH0.QQndoBJIGY4dS_18SmMaCkxfhrCDsAO9uaReUNUTCfU
+- **URL**: your-supabase-url
+- **Anon Key**: your-supabase-anon-key
 
 ## Step 1: Create Tables
 
