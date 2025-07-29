@@ -129,6 +129,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ onHomeClick, onRegisterClick }) =
       icon: ClipboardList,
       title: 'Track Issued Books',
       description: 'Monitor all currently issued books and manage returns efficiently.'
+    },
+    {
+      icon: UserPlus,
+      title: 'Student Portal',
+      description: 'Dedicated portal for students to browse, borrow, and manage their book activities.'
+    },
+    {
+      icon: Users,
+      title: 'Librarian Portal',
+      description: 'Comprehensive management portal for librarians to oversee all library operations.'
     }
   ];
 
@@ -248,7 +258,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onHomeClick, onRegisterClick }) =
             </div>
 
             {/* Features Column */}
-            <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="bg-white rounded-2xl shadow-xl p-8 h-fit">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold text-indigo-900 mb-2">BookZone Features</h2>
                 <p className="text-gray-600">Discover the powerful tools available in your library management system</p>
