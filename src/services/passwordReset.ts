@@ -1,8 +1,8 @@
 import emailjs from '@emailjs/browser';
 
 // EmailJS Configuration
-const EMAILJS_PUBLIC_KEY = 'Ue_nuhYPcCqLYeJkz';
-const EMAILJS_PRIVATE_KEY = 'tLhiT47C594WomAbd0spn';
+const EMAILJS_PUBLIC_KEY = 'Cnxjp8q6ojD4JCt12';
+const EMAILJS_PRIVATE_KEY = 'nf_NyapJ3VFCos67GK5Zp';
 
 // Initialize EmailJS
 emailjs.init(EMAILJS_PUBLIC_KEY);
@@ -40,8 +40,8 @@ export const passwordResetService = {
 
       // Send email using EmailJS with your service and template IDs
       const result = await emailjs.send(
-        'service_inwopi3', // Your EmailJS service ID
-        'template_pig9soq', // Your EmailJS template ID
+        'service_rac6nsj', // Your EmailJS service ID
+        'template_nbmcr8x', // Your EmailJS template ID
         templateParams,
         EMAILJS_PUBLIC_KEY
       );
