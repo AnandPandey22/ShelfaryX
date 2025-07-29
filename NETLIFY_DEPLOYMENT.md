@@ -44,8 +44,8 @@ Publish directory: dist
 3. Add these variables:
 
 ```
-VITE_SUPABASE_URL = https://mbgqanyamehfgjjhawzm.supabase.co
-VITE_SUPABASE_ANON_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1iZ3FhbnlhbWVoZmdqamhhd3ptIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTM2ODE1MDQsImV4cCI6MjA2OTI1NzUwNH0.zrfrM03FfXFfyALNDjpSK2qumtXu5_bFEPOswwoF7IU
+VITE_SUPABASE_URL = YOUR-SUPABASE-URL
+VITE_SUPABASE_ANON_KEY = YOUR-SUPABSE-ANON-KEY
 ```
 
 ### 3.2 Redeploy After Adding Variables
