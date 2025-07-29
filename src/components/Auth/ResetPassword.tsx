@@ -90,7 +90,8 @@ const ResetPassword: React.FC = () => {
   };
 
   const handleBackToLogin = () => {
-    window.location.href = '/';
+    // Navigate to login page using the same approach as the app
+    window.location.href = '/login';
   };
 
   if (validating) {
@@ -269,7 +270,7 @@ const ResetPassword: React.FC = () => {
                   onClick={handleBackToLogin}
                   className="text-indigo-600 hover:text-indigo-700 font-medium underline"
                 >
-                  Login
+                  Login Now
                 </button>
               </p>
             </div>
