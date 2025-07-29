@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background with rounded corners -->
+  <rect width="32" height="32" rx="8" fill="#4f46e5"/>
+  
+  <!-- Logo design: 4 vertical bars + 1 diagonal bar -->
+  <g transform="translate(8, 6)">
+    <!-- First vertical bar (shortest) -->
+    <rect x="0" y="8" width="2" height="8" fill="white"/>
+    
+    <!-- Second vertical bar (same height as first) -->
+    <rect x="3" y="8" width="2" height="8" fill="white"/>
+    
+    <!-- Third vertical bar (same height as first two) -->
+    <rect x="6" y="8" width="2" height="8" fill="white"/>
+    
+    <!-- Fourth vertical bar (taller) -->
+    <rect x="9" y="6" width="2" height="10" fill="white"/>
+    
+    <!-- Fifth bar (tallest, diagonal) -->
+    <rect x="12" y="4" width="2" height="12" fill="white" transform="rotate(15 13 10)"/>
+  </g>
+</svg>
