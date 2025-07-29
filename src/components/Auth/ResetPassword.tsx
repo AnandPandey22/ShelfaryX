@@ -128,7 +128,7 @@ const ResetPassword: React.FC = () => {
               onClick={handleBackToLogin}
               className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 transition-colors"
             >
-              Back to Login
+              Login Now
             </button>
           </div>
         </div>
@@ -176,8 +176,8 @@ const ResetPassword: React.FC = () => {
               onClick={handleBackToLogin}
               className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Login</span>
+              
+              <span>Login</span>
             </button>
           </div>
         </div>
@@ -269,7 +269,7 @@ const ResetPassword: React.FC = () => {
                   onClick={handleBackToLogin}
                   className="text-indigo-600 hover:text-indigo-700 font-medium underline"
                 >
-                  Back to Login
+                  Login
                 </button>
               </p>
             </div>
