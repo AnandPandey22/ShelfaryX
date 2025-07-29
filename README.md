@@ -160,10 +160,6 @@ See `DATABASE_SETUP.md` for detailed database setup instructions.
 
 ## 🔧 Configuration
 
-### Admin Access
-- **Email**: `admin@bookzone.com`
-- **Password**: `Arthur$53`
-
 ### Customization
 - Update colors in `tailwind.config.js`
 - Modify email templates in EmailJS
