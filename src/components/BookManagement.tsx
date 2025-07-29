@@ -154,135 +154,169 @@ const BookManagement: React.FC = () => {
 
         {/* Mobile Card Layout */}
         <div className="lg:hidden overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-hide">
-          <div className="p-4 space-y-4">
-            {filteredBooks.map((book) => (
-              <div key={book.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <BookOpen className="w-5 h-5 text-blue-600" />
+          {filteredBooks.length > 0 ? (
+            <div className="p-4 space-y-4">
+              {filteredBooks.map((book) => (
+                <div key={book.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <BookOpen className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">{book.title}</h3>
+                        <p className="text-sm text-gray-500">by {book.author}</p>
+                      </div>
+                    </div>
+                    <div className="flex space-x-1">
+                      <button
+                        onClick={() => handleEdit(book)}
+                        className="text-blue-600 hover:text-blue-900 p-1"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(book.id)}
+                        className="text-red-600 hover:text-red-900 p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-500">Category:</span>
+                      <span className="ml-1 inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                        {book.category}
+                      </span>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{book.title}</h3>
-                      <p className="text-sm text-gray-500">by {book.author}</p>
+                      <span className="text-gray-500">ISBN:</span>
+                      <span className="ml-1 text-gray-900">{book.isbn}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Total Copies:</span>
+                      <span className="ml-1 text-gray-900">{book.totalCopies}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Available:</span>
+                      <span className={`ml-1 inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        book.availableCopies > 0 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {book.availableCopies}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex space-x-1">
-                    <button
-                      onClick={() => handleEdit(book)}
-                      className="text-blue-600 hover:text-blue-900 p-1"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(book.id)}
-                      className="text-red-600 hover:text-red-900 p-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  
+                  <div className="text-xs text-gray-500">
+                    {book.publisher} ({book.publishYear})
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <span className="text-gray-500">Category:</span>
-                    <span className="ml-1 inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                      {book.category}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">ISBN:</span>
-                    <span className="ml-1 text-gray-900">{book.isbn}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Total Copies:</span>
-                    <span className="ml-1 text-gray-900">{book.totalCopies}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Available:</span>
-                    <span className={`ml-1 inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      book.availableCopies > 0 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {book.availableCopies}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="text-xs text-gray-500">
-                  {book.publisher} ({book.publishYear})
-                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="w-10 h-10 text-gray-400" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Books Found</h3>
+              <p className="text-gray-600 mb-6">Get started by adding your first book to the library collection.</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Book</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Desktop Table Layout */}
         <div className="hidden lg:block overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-hide">
-          <table className="w-full">
-            <thead className="bg-gray-50 sticky top-0 z-10">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Book</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Author</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">ISBN</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Copies</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Available</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredBooks.map((book) => (
-                <tr key={book.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-12 w-12">
-                        <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                          <BookOpen className="w-6 h-6 text-blue-600" />
+          {filteredBooks.length > 0 ? (
+            <table className="w-full">
+              <thead className="bg-gray-50 sticky top-0 z-10">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Book</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Author</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Category</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">ISBN</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Copies</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Available</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredBooks.map((book) => (
+                  <tr key={book.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-12 w-12">
+                          <div className="h-12 w-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <BookOpen className="w-6 h-6 text-blue-600" />
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{book.title}</div>
+                          <div className="text-sm text-gray-500">{book.publisher} ({book.publishYear})</div>
                         </div>
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{book.title}</div>
-                        <div className="text-sm text-gray-500">{book.publisher} ({book.publishYear})</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{book.author}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                      {book.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{book.isbn}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{book.totalCopies}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      book.availableCopies > 0 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {book.availableCopies}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button
-                      onClick={() => handleEdit(book)}
-                      className="text-blue-600 hover:text-blue-900 p-1"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(book.id)}
-                      className="text-red-600 hover:text-red-900 p-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{book.author}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                        {book.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{book.isbn}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{book.totalCopies}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        book.availableCopies > 0 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {book.availableCopies}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        onClick={() => handleEdit(book)}
+                        className="text-blue-600 hover:text-blue-900 p-1"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(book.id)}
+                        className="text-red-600 hover:text-red-900 p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <BookOpen className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Books Found</h3>
+              <p className="text-gray-600 mb-6">Get started by adding your first book to the library collection.</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Book</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

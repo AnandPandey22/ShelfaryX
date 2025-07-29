@@ -150,169 +150,184 @@ const StudentManagement: React.FC = () => {
 
         {/* Mobile Card Layout */}
         <div className="lg:hidden overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-hide">
-          <div className="p-4 space-y-4">
-            {filteredStudents.map((student) => (
-              <div key={student.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-indigo-600" />
+          {filteredStudents.length > 0 ? (
+            <div className="p-4 space-y-4">
+              {filteredStudents.map((student) => (
+                <div key={student.id} className="border border-gray-200 rounded-lg p-4 space-y-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                        <User className="w-5 h-5 text-indigo-600" />
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-900">{student.name}</h3>
+                        <p className="text-sm text-gray-500">ID: {student.studentId}</p>
+                      </div>
+                    </div>
+                    <div className="flex space-x-1">
+                      <button
+                        onClick={() => handleEdit(student)}
+                        className="text-indigo-600 hover:text-indigo-900 p-1"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(student.id)}
+                        className="text-red-600 hover:text-red-900 p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    <div>
+                      <span className="text-gray-500">Class:</span>
+                      <span className="ml-1 text-gray-900">{student.class}</span>
                     </div>
                     <div>
-                      <h3 className="font-medium text-gray-900">{student.name}</h3>
-                      <p className="text-sm text-gray-500">ID: {student.studentId}</p>
+                      <span className="text-gray-500">Section:</span>
+                      <span className="ml-1 text-gray-900">{student.section}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Branch:</span>
+                      <span className="ml-1 inline-flex items-center px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+                        <GraduationCap className="w-3 h-3 mr-1" />
+                        {student.collegeBranch}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">Status:</span>
+                      <span className={`ml-1 inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        student.isActive 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {student.isActive ? 'Active' : 'Inactive'}
+                      </span>
                     </div>
                   </div>
-                  <div className="flex space-x-1">
-                    <button
-                      onClick={() => handleEdit(student)}
-                      className="text-indigo-600 hover:text-indigo-900 p-1"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(student.id)}
-                      className="text-red-600 hover:text-red-900 p-1"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  
+                  <div className="space-y-2 text-sm">
+                    <div className="flex items-center text-gray-900">
+                      <Phone className="w-4 h-4 mr-2 text-gray-400" />
+                      {student.mobileNumber}
+                    </div>
+                    <div className="flex items-start text-gray-500">
+                      <MapPin className="w-4 h-4 mr-2 text-gray-400 mt-0.5 flex-shrink-0" />
+                      <span className="line-clamp-2">{student.address}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500">
+                    Joined: {student.joinDate}
                   </div>
                 </div>
-                
-                <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <span className="text-gray-500">Class:</span>
-                    <span className="ml-1 text-gray-900">{student.class}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Section:</span>
-                    <span className="ml-1 text-gray-900">{student.section}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Branch:</span>
-                    <span className="ml-1 inline-flex items-center px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
-                      <GraduationCap className="w-3 h-3 mr-1" />
-                      {student.collegeBranch}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-gray-500">Status:</span>
-                    <span className={`ml-1 inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      student.isActive 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {student.isActive ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center text-gray-900">
-                    <Phone className="w-4 h-4 mr-2 text-gray-400" />
-                    {student.mobileNumber}
-                  </div>
-                  <div className="flex items-start text-gray-500">
-                    <MapPin className="w-4 h-4 mr-2 text-gray-400 mt-0.5 flex-shrink-0" />
-                    <span className="line-clamp-2">{student.address}</span>
-                  </div>
-                </div>
-                
-                <div className="text-xs text-gray-500">
-                  Joined: {student.joinDate}
-                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <User className="w-10 h-10 text-gray-400" />
               </div>
-            ))}
-          </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Students Found</h3>
+              <p className="text-gray-600 mb-6">Get started by adding your first student to the library system.</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Student</span>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Desktop Table Layout */}
         <div className="hidden lg:block overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-hide">
-          <table className="w-full">
-            <thead className="bg-gray-50 sticky top-0 z-10">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Student</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Student ID</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Class & Section</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Branch</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Contact</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredStudents.map((student) => (
-                <tr key={student.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-12 w-12">
-                        <div className="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center">
-                          <User className="w-6 h-6 text-indigo-600" />
+          {filteredStudents.length > 0 ? (
+            <table className="w-full">
+              <thead className="bg-gray-50 sticky top-0 z-10">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Student</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Student ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Class & Section</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Branch</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Contact</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-50">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredStudents.map((student) => (
+                  <tr key={student.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="flex-shrink-0 h-12 w-12">
+                          <div className="h-12 w-12 bg-indigo-100 rounded-full flex items-center justify-center">
+                            <User className="w-6 h-6 text-indigo-600" />
+                          </div>
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{student.name}</div>
+                          <div className="text-sm text-gray-500">{student.email}</div>
                         </div>
                       </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">{student.name}</div>
-                        <div className="text-sm text-gray-500">Joined: {student.joinDate}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm font-mono text-gray-900 bg-gray-100 px-2 py-1 rounded">
-                      {student.studentId}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{student.class}</div>
-                    <div className="text-sm text-gray-500">Section: {student.section}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
-                      <GraduationCap className="w-3 h-3 mr-1" />
-                      {student.collegeBranch}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center text-sm text-gray-900 mb-1">
-                      <Phone className="w-4 h-4 mr-1 text-gray-400" />
-                      {student.mobileNumber}
-                    </div>
-                    <div className="flex items-start text-sm text-gray-500">
-                      <MapPin className="w-4 h-4 mr-1 text-gray-400 mt-0.5 flex-shrink-0" />
-                      <span className="line-clamp-2">{student.address}</span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <button
-                      onClick={() => toggleStudentStatus(student.id, student.isActive)}
-                      className={`inline-flex px-2 py-1 text-xs font-medium rounded-full transition-colors ${
-                        student.isActive
-                          ? 'bg-green-100 text-green-800 hover:bg-green-200'
-                          : 'bg-red-100 text-red-800 hover:bg-red-200'
-                      }`}
-                    >
-                      {student.isActive ? 'Active' : 'Inactive'}
-                    </button>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleEdit(student)}
-                      className="text-indigo-600 hover:text-indigo-900 p-1 rounded hover:bg-indigo-50 transition-colors"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(student.id)}
-                      className="text-red-600 hover:text-red-900 p-1 rounded hover:bg-red-50 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.studentId}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {student.class} - {student.section}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full">
+                        <GraduationCap className="w-3 h-3 mr-1" />
+                        {student.collegeBranch}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{student.mobileNumber}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        student.isActive 
+                          ? 'bg-green-100 text-green-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {student.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <button
+                        onClick={() => handleEdit(student)}
+                        className="text-indigo-600 hover:text-indigo-900 p-1"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(student.id)}
+                        className="text-red-600 hover:text-red-900 p-1"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <User className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Students Found</h3>
+              <p className="text-gray-600 mb-6">Get started by adding your first student to the library system.</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Student</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

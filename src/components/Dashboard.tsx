@@ -173,62 +173,82 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activities</h2>
           <div className="space-y-3">
-            {issues.slice(0, 5).map((issue) => {
-              const book = books.find(b => b.id === issue.bookId);
-              const student = students.find(s => s.id === issue.studentId);
-              
-              return (
-                <div
-                  key={issue.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-shadow transition-transform duration-200 hover:shadow-md hover:bg-indigo-50 hover:scale-[1.01] cursor-pointer"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900 transition-colors duration-200 hover:text-indigo-700">{book?.title}</p>
-                    <p className="text-sm text-gray-600 transition-colors duration-200 hover:text-indigo-600">{student?.name}</p>
+            {issues.length > 0 ? (
+              issues.slice(0, 5).map((issue) => {
+                const book = books.find(b => b.id === issue.bookId);
+                const student = students.find(s => s.id === issue.studentId);
+                
+                return (
+                  <div
+                    key={issue.id}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-shadow transition-transform duration-200 hover:shadow-md hover:bg-indigo-50 hover:scale-[1.01] cursor-pointer"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900 transition-colors duration-200 hover:text-indigo-700">{book?.title}</p>
+                      <p className="text-sm text-gray-600 transition-colors duration-200 hover:text-indigo-600">{student?.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm text-gray-500">Due: {formatDate(issue.dueDate)}</p>
+                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        issue.status === 'overdue' 
+                          ? 'bg-red-100 text-red-800'
+                          : issue.status === 'issued'
+                          ? 'bg-blue-100 text-blue-800'
+                          : 'bg-green-100 text-green-800'
+                      }`}>
+                        {issue.status}
+                      </span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm text-gray-500">Due: {formatDate(issue.dueDate)}</p>
-                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      issue.status === 'overdue' 
-                        ? 'bg-red-100 text-red-800'
-                        : issue.status === 'issued'
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-green-100 text-green-800'
-                    }`}>
-                      {issue.status}
-                    </span>
-                  </div>
+                );
+              })
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <ClipboardList className="w-8 h-8 text-gray-400" />
                 </div>
-              );
-            })}
+                <p className="text-gray-500 font-medium">No Recent Activity</p>
+                <p className="text-sm text-gray-400 mt-1">Start by issuing books to students</p>
+              </div>
+            )}
           </div>
         </div>
 
         <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Popular Books</h2>
           <div className="space-y-3">
-            {books
-              .sort((a, b) => (b.totalCopies - b.availableCopies) - (a.totalCopies - a.availableCopies))
-              .slice(0, 5)
-              .map((book) => (
-                <div
-                  key={book.id}
-                  className="flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-shadow transition-transform duration-200 hover:shadow-md hover:bg-indigo-50 hover:scale-[1.01] cursor-pointer"
-                >
-                  <div>
-                    <p className="font-medium text-gray-900 transition-colors duration-200 hover:text-indigo-700">{book.title}</p>
-                    <p className="text-sm text-gray-600 transition-colors duration-200 hover:text-indigo-600">{book.author}</p>
+            {books.length > 0 ? (
+              books
+                .sort((a, b) => (b.totalCopies - b.availableCopies) - (a.totalCopies - a.availableCopies))
+                .slice(0, 5)
+                .map((book) => (
+                  <div
+                    key={book.id}
+                    className="flex items-center justify-between p-3 bg-gray-50 rounded-lg transition-shadow transition-transform duration-200 hover:shadow-md hover:bg-indigo-50 hover:scale-[1.01] cursor-pointer"
+                  >
+                    <div>
+                      <p className="font-medium text-gray-900 transition-colors duration-200 hover:text-indigo-700">{book.title}</p>
+                      <p className="text-sm text-gray-600 transition-colors duration-200 hover:text-indigo-600">{book.author}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium text-gray-900">
+                        {book.totalCopies - book.availableCopies} issued
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {book.availableCopies} available
+                      </p>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">
-                      {book.totalCopies - book.availableCopies} issued
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {book.availableCopies} available
-                    </p>
-                  </div>
+                ))
+            ) : (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <BookOpen className="w-8 h-8 text-gray-400" />
                 </div>
-              ))}
+                <p className="text-gray-500 font-medium">No Popular Books</p>
+                <p className="text-sm text-gray-400 mt-1">Add books to your library collection</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

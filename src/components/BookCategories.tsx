@@ -132,44 +132,61 @@ const BookCategories: React.FC = () => {
         </div>
 
         <div className="overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-hide">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 p-4 lg:p-6">
-          {filteredCategories.map((category) => (
-            <div key={category.id} className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100 hover:shadow-md transition-all duration-200">
-              <div className="flex items-start justify-between mb-4">
-                <div className="p-3 bg-indigo-100 rounded-lg">
-                  <FolderOpen className="w-6 h-6 text-indigo-600" />
+          {filteredCategories.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 p-4 lg:p-6">
+            {filteredCategories.map((category) => (
+              <div key={category.id} className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100 hover:shadow-md transition-all duration-200">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="p-3 bg-indigo-100 rounded-lg">
+                    <FolderOpen className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => handleEdit(category)}
+                      className="text-gray-500 hover:text-indigo-600 p-1 rounded transition-colors"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(category.id)}
+                      className="text-gray-500 hover:text-red-600 p-1 rounded transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex space-x-2">
+                
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{category.name}</h3>
+                <p className="text-sm text-gray-600 mb-4">{category.description}</p>
+                
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-indigo-600">{category.bookCount}</span>
                   <button
-                    onClick={() => handleEdit(category)}
-                    className="text-gray-500 hover:text-indigo-600 p-1 rounded transition-colors"
+                    onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
+                    className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
                   >
-                    <Edit className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(category.id)}
-                    className="text-gray-500 hover:text-red-600 p-1 rounded transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
+                    {selectedCategory === category.id ? 'Hide Books' : 'View Books'}
                   </button>
                 </div>
               </div>
-              
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">{category.name}</h3>
-              <p className="text-sm text-gray-600 mb-4">{category.description}</p>
-              
-              <div className="flex items-center justify-between">
-                <span className="text-2xl font-bold text-indigo-600">{category.bookCount}</span>
-                <button
-                  onClick={() => setSelectedCategory(selectedCategory === category.id ? null : category.id)}
-                  className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
-                >
-                  {selectedCategory === category.id ? 'Hide Books' : 'View Books'}
-                </button>
-              </div>
+            ))}
             </div>
-          ))}
-          </div>
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FolderOpen className="w-10 h-10 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Book Categories</h3>
+              <p className="text-gray-600 mb-6">Get started by creating your first book category to organize your library collection.</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
+              >
+                <Plus className="w-5 h-5" />
+                <span>Add Category</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
