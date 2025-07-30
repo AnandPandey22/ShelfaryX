@@ -5,10 +5,6 @@ import { Book } from '../types';
 
 const BookManagement: React.FC = () => {
   const { books, categories, addBook, updateBook, deleteBook, loading } = useLibrary();
-  
-  // Debug logging for private library categories
-  console.log('BookManagement - Categories:', categories);
-  console.log('BookManagement - Categories length:', categories.length);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
