@@ -542,7 +542,17 @@ const StudentDashboard: React.FC = () => {
             <div className="bg-white rounded-lg shadow overflow-hidden">
               <div className="overflow-y-auto max-h-[calc(100vh-300px)] scrollbar-hide">
                 <div className="p-6 space-y-4">
-                  {issuedBooks.filter(issue => issue.status === 'returned').map((issue) => {
+                  {issuedBooks.filter(issue => issue.status === 'returned').length === 0 ? (
+                    <div className="text-center py-12">
+                      <BookOpenCheck className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No Returned Books</h3>
+                      <p className="text-gray-500">
+                        You haven't returned any books yet.
+                      </p>
+                      <p className="text-sm text-gray-400 mt-2">Your returned books will appear here once you return them.</p>
+                    </div>
+                  ) : (
+                    issuedBooks.filter(issue => issue.status === 'returned').map((issue) => {
                     const book = books.find(b => b.id === issue.bookId);
                     return (
                       <div key={issue.id} className="border border-gray-200 rounded-lg p-4 bg-gray-50">
@@ -576,7 +586,8 @@ const StudentDashboard: React.FC = () => {
                         </div>
                       </div>
                     );
-                  })}
+                  }))
+                  }
                 </div>
               </div>
             </div>
