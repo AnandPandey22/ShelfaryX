@@ -2,6 +2,7 @@ import React from 'react';
 import { BookOpen, User, Calendar, Download, FileText, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { useAuth } from '../../contexts/AuthContext';
+import { institutionService } from '../../services/database';
 import { Book, BookIssue } from '../../types';
 
 interface StudentDownloadInvoiceProps {
@@ -30,7 +31,7 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
   );
 
   // Generate PDF invoice for student
-  const generateInvoice = (issue: BookIssue) => {
+  const generateInvoice = async (issue: BookIssue) => {
     console.log('Generating invoice for issue:', issue);
     
     // Validate issue object
@@ -58,6 +59,22 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
     }
 
     try {
+      // Get institution details for issuer information
+      let issuerEmail = 'bookzonelibrary@outlook.com';
+      let issuerPhone = '+91-9878955679';
+      
+      if (issue.institutionId) {
+        try {
+          const institution = await institutionService.getInstitutionById(issue.institutionId);
+          if (institution) {
+            issuerEmail = institution.email;
+            issuerPhone = institution.phone;
+          }
+        } catch (error) {
+          console.warn('Could not fetch institution details:', error);
+        }
+      }
+      
       console.log('Creating PDF document...');
       const doc = new jsPDF();
       
@@ -92,6 +109,9 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       
       doc.text('Order Date:', 20, 94);
       doc.text(formatDate(issue.issueDate), 50, 94);
+
+      doc.text('Issuer's Phone:', 20, 101);
+      doc.text(issuerPhone, 50, 101);
       
       // Right column
       doc.text('Issue Date:', 120, 80);
@@ -102,6 +122,9 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       
       doc.text('Issued By:', 120, 94);
      doc.text(issue.issuedBy || 'Institution', 150, 94);
+
+      doc.text('Issuer's Email:', 120, 101);
+      doc.text(issuerEmail, 150, 101);
       
       // Student Information Section
       doc.setFontSize(12);
