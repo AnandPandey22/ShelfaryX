@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, BookOpen, Clock, AlertTriangle, Bell, CheckCircle, Eye, Building2, Calendar, ChevronDown, X, BookOpenCheck, CalendarDays, Hash, User, FileText } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { Book, BookIssue, Notification } from '../types';
-import { bookService, issueService, notificationService, institutionService, categoryService } from '../services/database';
+import { Book, BookIssue, Notification, Institution, PrivateLibrary } from '../types';
+import { bookService, issueService, notificationService, institutionService, categoryService, privateLibraryService } from '../services/database';
 import StudentSidebar from './Layout/StudentSidebar';
 import StudentMobileSidebar from './Layout/StudentMobileSidebar';
 import StudentMobileHeader from './Layout/StudentMobileHeader';
@@ -15,7 +15,7 @@ const StudentDashboard: React.FC = () => {
   const [allBooks, setAllBooks] = useState<Book[]>([]); // Store all books
   const [issuedBooks, setIssuedBooks] = useState<BookIssue[]>([]);
   const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [institution, setInstitution] = useState<any>(null);
+  const [institution, setInstitution] = useState<Institution | PrivateLibrary | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [categories, setCategories] = useState<any[]>([]);
@@ -64,8 +64,12 @@ const StudentDashboard: React.FC = () => {
     try {
       setLoading(true);
       
-      // Load institution data
-      const institutionData = await institutionService.getInstitutionById(institutionId!);
+      // Load institution/library data - check both tables
+      let institutionData: Institution | PrivateLibrary | null = await institutionService.getInstitutionById(institutionId!);
+      if (!institutionData) {
+        // If not found in institutions, try private libraries
+        institutionData = await privateLibraryService.getPrivateLibraryById(institutionId!);
+      }
       setInstitution(institutionData);
       
       // Load all books
@@ -311,9 +315,9 @@ const StudentDashboard: React.FC = () => {
                         {institution?.name || 'Loading...'}
                       </div>
                     </div>
-                    {institution?.collegeCode && (
+                    {institution && (
                       <div className="text-sm text-gray-600 lg:ml-7">
-                        Code: {institution.collegeCode}
+                        Code: {'collegeCode' in institution ? institution.collegeCode : institution.libraryCode}
                       </div>
                     )}
                   </div>
