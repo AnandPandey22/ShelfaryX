@@ -620,7 +620,7 @@ export const adminService = {
   // Authenticate admin
   async authenticateAdmin(email: string, password: string): Promise<{ isAdmin: boolean } | null> {
     // Hardcoded admin credentials
-    if (email === 'admin@bookzone.com' && password === 'Arthur$53') {
+    if (email === 'anand@bookzone.com' && password === 'Arthur$536') {
       return { isAdmin: true };
     }
     return null;
@@ -791,7 +791,7 @@ export const dbPasswordResetService = {
       if (student) return 'student';
 
       // Check admin (hardcoded for now)
-      if (email === 'admin@bookzone.com') return 'admin';
+      if (email === 'anand@bookzone.com') return 'admin';
 
       return null;
     } catch (error) {
