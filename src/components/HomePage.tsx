@@ -411,6 +411,12 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
             <p className="text-indigo-200 mb-6 max-w-2xl mx-auto">
               Empowering students through knowledge, one book at a time. Join our community of learners and discover the endless possibilities that await you.
             </p>
+
+            {/* Developer Credit */}
+            <p className="text-indigo-300 mb-6">
+              Developed by Anand Pandey
+            </p>
+            
             <div className="border-t border-indigo-800 pt-6">
               <p className="text-indigo-300">
                 © 2025 BookZone Library. All rights reserved.
