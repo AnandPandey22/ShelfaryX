@@ -5,6 +5,10 @@ import { Book } from '../types';
 
 const BookManagement: React.FC = () => {
   const { books, categories, addBook, updateBook, deleteBook, loading } = useLibrary();
+  
+  // Debug logging for private library categories
+  console.log('BookManagement - Categories:', categories);
+  console.log('BookManagement - Categories length:', categories.length);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
@@ -373,12 +377,21 @@ const BookManagement: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
                     <option value="">Select Category</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
+                    {categories.length === 0 ? (
+                      <option value="" disabled>No categories available - Please create categories first</option>
+                    ) : (
+                      categories.map((category) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))
+                    )}
                   </select>
+                  {categories.length === 0 && (
+                    <div className="text-sm text-amber-600 mt-1">
+                      💡 No categories found. Please go to "Manage Categories" and create some categories first.
+                    </div>
+                  )}
                 </div>
                 
                 <div>
