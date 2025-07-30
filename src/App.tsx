@@ -203,33 +203,38 @@ const AppContent: React.FC = () => {
         return <StudentDashboard />;
       }
 
-      // Show librarian dashboard for institutions and librarians
-    switch (activeSection) {
-      case 'dashboard':
-        return <Dashboard />;
-      case 'categories':
-        return <BookCategories />;
-      case 'books':
-        return <BookManagement />;
-      case 'students':
-        return <StudentManagement />;
-      case 'issue-book':
-        return <IssueBook />;
-      case 'issued-books':
-        return <IssuedBooks />;
-      case 'overdue':
-          return <OverdueBooks />;
-      case 'reports':
-          return <Reports />;
-        case 'returned-books':
-          return <BooksReturned />;
-        case 'download-invoice':
-          return <DownloadInvoice />;
-        case 'home':
-          return <MobileWelcome />;
-      default:
-        return <Dashboard />;
-    }
+      // Show librarian dashboard for institutions, private libraries, and librarians
+      if (userType === 'institution' || userType === 'privateLibrary' || userType === 'librarian') {
+        switch (activeSection) {
+          case 'dashboard':
+            return <Dashboard />;
+          case 'categories':
+            return <BookCategories />;
+          case 'books':
+            return <BookManagement />;
+          case 'students':
+            return <StudentManagement />;
+          case 'issue-book':
+            return <IssueBook />;
+          case 'issued-books':
+            return <IssuedBooks />;
+          case 'overdue':
+            return <OverdueBooks />;
+          case 'reports':
+            return <Reports />;
+          case 'returned-books':
+            return <BooksReturned />;
+          case 'download-invoice':
+            return <DownloadInvoice />;
+          case 'home':
+            return <MobileWelcome />;
+          default:
+            return <Dashboard />;
+        }
+      }
+
+      // Default fallback
+      return <Dashboard />;
     } catch (error) {
       console.error('Error rendering content:', error);
       return (
@@ -312,7 +317,7 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // For institutions and librarians, render with sidebar
+  // For institutions, private libraries, and librarians, render with sidebar
   return (
     <div className="flex h-screen bg-gray-50">
       <Sidebar 
