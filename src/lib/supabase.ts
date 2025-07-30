@@ -9,6 +9,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 // Database table names
 export const TABLES = {
   INSTITUTIONS: 'institutions',
+  PRIVATE_LIBRARIES: 'private_libraries',
   BOOKS: 'books',
   CATEGORIES: 'categories',
   STUDENTS: 'students',
