@@ -81,16 +81,25 @@ export const institutionService = {
 
   // Authenticate institution
   async authenticateInstitution(email: string, password: string): Promise<Institution | null> {
-    const { data, error } = await supabase
-      .from(TABLES.INSTITUTIONS)
-      .select('*')
-      .eq('email', email)
-      .eq('password', password)
-      .eq('is_active', true)
-      .single();
-    
-    if (error) return null;
-    return toCamelCase(data);
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.INSTITUTIONS)
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .eq('is_active', true)
+        .single();
+      
+      if (error) {
+        // Log error but don't throw for authentication attempts
+        console.debug('Institution authentication failed:', error.message);
+        return null;
+      }
+      return toCamelCase(data);
+    } catch (error) {
+      console.debug('Institution authentication error:', error);
+      return null;
+    }
   }
 };
 
@@ -153,16 +162,25 @@ export const privateLibraryService = {
 
   // Authenticate private library
   async authenticatePrivateLibrary(email: string, password: string): Promise<PrivateLibrary | null> {
-    const { data, error } = await supabase
-      .from(TABLES.PRIVATE_LIBRARIES)
-      .select('*')
-      .eq('email', email)
-      .eq('password', password)
-      .eq('is_active', true)
-      .single();
-    
-    if (error) return null;
-    return toCamelCase(data);
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.PRIVATE_LIBRARIES)
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .eq('is_active', true)
+        .single();
+      
+      if (error) {
+        // Log error but don't throw for authentication attempts
+        console.debug('Private library authentication failed:', error.message);
+        return null;
+      }
+      return toCamelCase(data);
+    } catch (error) {
+      console.debug('Private library authentication error:', error);
+      return null;
+    }
   }
 };
 
@@ -405,16 +423,25 @@ export const studentService = {
 
   // Authenticate student
   async authenticateStudent(email: string, password: string): Promise<Student | null> {
-    const { data, error } = await supabase
-      .from(TABLES.STUDENTS)
-      .select('*')
-      .eq('email', email)
-      .eq('password', password)
-      .eq('is_active', true)
-      .single();
-    
-    if (error) return null;
-    return toCamelCase(data);
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.STUDENTS)
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .eq('is_active', true)
+        .single();
+      
+      if (error) {
+        // Log error but don't throw for authentication attempts
+        console.debug('Student authentication failed:', error.message);
+        return null;
+      }
+      return toCamelCase(data);
+    } catch (error) {
+      console.debug('Student authentication error:', error);
+      return null;
+    }
   }
 };
 
@@ -512,16 +539,25 @@ export const issueService = {
 export const librarianService = {
   // Authenticate librarian
   async authenticate(email: string, password: string): Promise<Librarian | null> {
-    const { data, error } = await supabase
-      .from(TABLES.LIBRARIANS)
-      .select('*')
-      .eq('email', email)
-      .eq('password', password)
-      .eq('is_active', true)
-      .single();
-    
-    if (error) return null;
-    return toCamelCase(data);
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.LIBRARIANS)
+        .select('*')
+        .eq('email', email)
+        .eq('password', password)
+        .eq('is_active', true)
+        .single();
+      
+      if (error) {
+        // Log error but don't throw for authentication attempts
+        console.debug('Librarian authentication failed:', error.message);
+        return null;
+      }
+      return toCamelCase(data);
+    } catch (error) {
+      console.debug('Librarian authentication error:', error);
+      return null;
+    }
   },
 
   // Get librarian by ID
