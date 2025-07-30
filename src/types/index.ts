@@ -76,11 +76,24 @@ export interface Institution {
   createdAt: string;
 }
 
+export interface PrivateLibrary {
+  id: string;
+  name: string;
+  email: string;
+  password: string;
+  address?: string;
+  phone: string;
+  website?: string;
+  libraryCode: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
 export interface User {
   id: string;
   email: string;
   password: string;
-  userType: 'institution' | 'student' | 'admin';
+  userType: 'institution' | 'student' | 'admin' | 'privateLibrary';
   isActive: boolean;
   createdAt: string;
 }
@@ -94,7 +107,7 @@ export interface Admin {
 export interface Notification {
   id: string;
   userId: string;
-  userType: 'institution' | 'student';
+  userType: 'institution' | 'student' | 'privateLibrary';
   title: string;
   message: string;
   type: 'overdue' | 'due_soon' | 'returned' | 'issued';
