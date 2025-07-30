@@ -71,8 +71,8 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       doc.text('Library Management System', 105, 30, { align: 'center' });
       
       doc.setFontSize(10);
-      doc.text('info@bookzone.com', 105, 40, { align: 'center' });
-      doc.text('+91-1234567890', 105, 47, { align: 'center' });
+      doc.text('bookzonelibrary@outlook.com', 105, 40, { align: 'center' });
+      doc.text('+91-9878955679', 105, 47, { align: 'center' });
       
       // Invoice Title
       doc.setFontSize(18);
@@ -101,7 +101,7 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       doc.text(formatDate(issue.dueDate), 150, 87);
       
       doc.text('Issued By:', 120, 94);
-      doc.text('BookZone', 150, 94);
+     doc.text(issue.issuedBy || 'Institution', 150, 94);
       
       // Student Information Section
       doc.setFontSize(12);
