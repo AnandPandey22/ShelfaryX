@@ -132,7 +132,7 @@ const AdminLogin: React.FC = () => {
 
           <div className="text-center">
             <p className="text-xs text-gray-500">
-              Default credentials: admin@bookzone.com / Arthur$53
+              Default credentials: anand@bookzone.com / Arthur$536
             </p>
           </div>
         </form>
