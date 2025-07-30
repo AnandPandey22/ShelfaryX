@@ -245,7 +245,7 @@ const StudentProfile: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  College/Institution
+                  College/Private Library
                 </label>
                 <input
                   type="text"
