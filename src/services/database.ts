@@ -1,5 +1,5 @@
 import { supabase, TABLES } from '../lib/supabase';
-import { Book, BookCategory, Student, BookIssue, Librarian, Institution, Notification } from '../types';
+import { Book, BookCategory, Student, BookIssue, Librarian, Institution, PrivateLibrary, Notification } from '../types';
 
 // Helper functions for data transformation
 const toSnakeCase = (obj: any): any => {
@@ -30,6 +30,14 @@ const toCamelCase = (obj: any): any => {
     return newObj;
   }
   return obj;
+};
+
+// Helper function to generate unique library code
+const generateLibraryCode = (): string => {
+  const prefix = 'LIB';
+  const timestamp = Date.now().toString().slice(-6);
+  const random = Math.random().toString(36).substring(2, 5).toUpperCase();
+  return `${prefix}${timestamp}${random}`;
 };
 
 // Institution Operations
@@ -75,6 +83,78 @@ export const institutionService = {
   async authenticateInstitution(email: string, password: string): Promise<Institution | null> {
     const { data, error } = await supabase
       .from(TABLES.INSTITUTIONS)
+      .select('*')
+      .eq('email', email)
+      .eq('password', password)
+      .eq('is_active', true)
+      .single();
+    
+    if (error) return null;
+    return toCamelCase(data);
+  }
+};
+
+// Private Library Operations
+export const privateLibraryService = {
+  // Get all private libraries
+  async getAllPrivateLibraries(): Promise<PrivateLibrary[]> {
+    const { data, error } = await supabase
+      .from(TABLES.PRIVATE_LIBRARIES)
+      .select('*')
+      .eq('is_active', true)
+      .order('name');
+    
+    if (error) throw error;
+    return toCamelCase(data || []);
+  },
+
+  // Get private library by ID
+  async getPrivateLibraryById(id: string): Promise<PrivateLibrary | null> {
+    const { data, error } = await supabase
+      .from(TABLES.PRIVATE_LIBRARIES)
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) return null;
+    return toCamelCase(data);
+  },
+
+  // Register new private library
+  async registerPrivateLibrary(library: Omit<PrivateLibrary, 'id' | 'createdAt' | 'libraryCode'>): Promise<PrivateLibrary> {
+    // Generate unique library code
+    let libraryCode = generateLibraryCode();
+    let isUnique = false;
+    
+    while (!isUnique) {
+      const { data: existing } = await supabase
+        .from(TABLES.PRIVATE_LIBRARIES)
+        .select('id')
+        .eq('library_code', libraryCode)
+        .single();
+      
+      if (!existing) {
+        isUnique = true;
+      } else {
+        libraryCode = generateLibraryCode();
+      }
+    }
+
+    const snakeLibrary = toSnakeCase({ ...library, libraryCode });
+    const { data, error } = await supabase
+      .from(TABLES.PRIVATE_LIBRARIES)
+      .insert([snakeLibrary])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return toCamelCase(data);
+  },
+
+  // Authenticate private library
+  async authenticatePrivateLibrary(email: string, password: string): Promise<PrivateLibrary | null> {
+    const { data, error } = await supabase
+      .from(TABLES.PRIVATE_LIBRARIES)
       .select('*')
       .eq('email', email)
       .eq('password', password)
@@ -536,6 +616,17 @@ export const adminService = {
     return toCamelCase(data || []);
   },
 
+  // Get all private libraries for admin
+  async getAllPrivateLibrariesForAdmin(): Promise<PrivateLibrary[]> {
+    const { data, error } = await supabase
+      .from(TABLES.PRIVATE_LIBRARIES)
+      .select('*')
+      .order('name');
+    
+    if (error) throw error;
+    return toCamelCase(data || []);
+  },
+
   // Get all students across all institutions
   async getAllStudentsForAdmin(): Promise<Student[]> {
     const { data, error } = await supabase
@@ -589,14 +680,16 @@ export const adminService = {
 
   // Get admin statistics
   async getAdminStatistics() {
-    const [institutions, students, books, issues] = await Promise.all([
+    const [institutions, privateLibraries, students, books, issues] = await Promise.all([
       this.getAllInstitutionsForAdmin(),
+      this.getAllPrivateLibrariesForAdmin(),
       this.getAllStudentsForAdmin(),
       this.getAllBooksForAdmin(),
       this.getAllIssuesForAdmin()
     ]);
 
     const totalInstitutions = institutions.length;
+    const totalPrivateLibraries = privateLibraries.length;
     const totalStudents = students.length;
     const totalBooks = books.reduce((sum, book) => sum + book.totalCopies, 0);
     const totalIssuedBooks = issues.filter(issue => issue.status === 'issued' || issue.status === 'overdue').length;
@@ -605,12 +698,14 @@ export const adminService = {
 
     return {
       totalInstitutions,
+      totalPrivateLibraries,
       totalStudents,
       totalBooks,
       totalIssuedBooks,
       totalReturnedBooks,
       totalOverdueBooks,
       institutions,
+      privateLibraries,
       students,
       books,
       issues
@@ -620,7 +715,7 @@ export const adminService = {
   // Authenticate admin
   async authenticateAdmin(email: string, password: string): Promise<{ isAdmin: boolean } | null> {
     // Hardcoded admin credentials
-    if (email === 'anand@bookzone.com' && password === 'Arthur$536') {
+    if (email === 'bookzonelibrary@outlook.com' && password === 'Arthur$53') {
       return { isAdmin: true };
     }
     return null;
@@ -746,6 +841,9 @@ export const dbPasswordResetService = {
         case 'institution':
           table = TABLES.INSTITUTIONS;
           break;
+        case 'privateLibrary':
+          table = TABLES.PRIVATE_LIBRARIES;
+          break;
         case 'student':
           table = TABLES.STUDENTS;
           break;
@@ -770,7 +868,7 @@ export const dbPasswordResetService = {
   },
 
   // Get user type by email
-  async getUserTypeByEmail(email: string): Promise<'institution' | 'student' | 'admin' | null> {
+  async getUserTypeByEmail(email: string): Promise<'institution' | 'student' | 'admin' | 'privateLibrary' | null> {
     try {
       // Check institutions
       const { data: institution } = await supabase
@@ -780,6 +878,15 @@ export const dbPasswordResetService = {
         .single();
       
       if (institution) return 'institution';
+
+      // Check private libraries
+      const { data: privateLibrary } = await supabase
+        .from(TABLES.PRIVATE_LIBRARIES)
+        .select('id')
+        .eq('email', email)
+        .single();
+      
+      if (privateLibrary) return 'privateLibrary';
 
       // Check students
       const { data: student } = await supabase
@@ -791,7 +898,7 @@ export const dbPasswordResetService = {
       if (student) return 'student';
 
       // Check admin (hardcoded for now)
-      if (email === 'anand@bookzone.com') return 'admin';
+      if (email === 'bookzonelibrary@outlook.com') return 'admin';
 
       return null;
     } catch (error) {
