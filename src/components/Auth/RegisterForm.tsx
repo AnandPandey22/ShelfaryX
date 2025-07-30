@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Library, Eye, EyeOff, ArrowLeft, Building, GraduationCap } from 'lucide-react';
-import { institutionService, studentService } from '../../services/database';
+import { Library, Eye, EyeOff, ArrowLeft, Building, GraduationCap, BookOpen } from 'lucide-react';
+import { institutionService, studentService, privateLibraryService } from '../../services/database';
 
 interface RegisterFormProps {
   onBackClick?: () => void;
@@ -20,6 +20,25 @@ interface InstitutionFormProps {
     password: string;
     phone: string;
     collegeCode: string;
+  }>>;
+  showPassword: boolean;
+  setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
+  loading: boolean;
+  onSubmit: (e: React.FormEvent) => void;
+}
+
+interface PrivateLibraryFormProps {
+  libraryData: {
+    name: string;
+    email: string;
+    password: string;
+    phone: string;
+  };
+  setLibraryData: React.Dispatch<React.SetStateAction<{
+    name: string;
+    email: string;
+    password: string;
+    phone: string;
   }>>;
   showPassword: boolean;
   setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
@@ -54,15 +73,15 @@ interface StudentFormProps {
   setShowPassword: React.Dispatch<React.SetStateAction<boolean>>;
   loading: boolean;
   onSubmit: (e: React.FormEvent) => void;
-  // College search props
+  // College/Library search props
   collegeSearch: string;
   setCollegeSearch: React.Dispatch<React.SetStateAction<string>>;
-  collegeResults: Array<{id: string, name: string, collegeCode: string}>;
+  collegeResults: Array<{id: string, name: string, collegeCode: string, type: string}>;
   showCollegeResults: boolean;
   selectedCollegeId: string;
   collegeSearchError: string;
   onCollegeSearch: (value: string) => void;
-  onCollegeSelect: (college: {id: string, name: string, collegeCode: string}) => void;
+  onCollegeSelect: (college: {id: string, name: string, collegeCode: string, type: string}) => void;
 }
 
 const InstitutionForm: React.FC<InstitutionFormProps> = ({
@@ -170,6 +189,94 @@ const InstitutionForm: React.FC<InstitutionFormProps> = ({
   </form>
 );
 
+const PrivateLibraryForm: React.FC<PrivateLibraryFormProps> = ({
+  libraryData,
+  setLibraryData,
+  showPassword,
+  setShowPassword,
+  loading,
+  onSubmit
+}) => (
+  <form onSubmit={onSubmit} className="space-y-6">
+    <div>
+      <label htmlFor="libraryName" className="block text-sm font-medium text-gray-700 mb-2">
+        Library Name *
+      </label>
+      <input
+        id="libraryName"
+        type="text"
+        value={libraryData.name}
+        onChange={(e) => setLibraryData({...libraryData, name: e.target.value})}
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        placeholder="Enter library name"
+        required
+      />
+    </div>
+
+    <div>
+      <label htmlFor="libraryEmail" className="block text-sm font-medium text-gray-700 mb-2">
+        Email Address *
+      </label>
+      <input
+        id="libraryEmail"
+        type="email"
+        value={libraryData.email}
+        onChange={(e) => setLibraryData({...libraryData, email: e.target.value})}
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        placeholder="Enter email address"
+        required
+      />
+    </div>
+
+    <div>
+      <label htmlFor="libraryPhone" className="block text-sm font-medium text-gray-700 mb-2">
+        Phone Number *
+      </label>
+      <input
+        id="libraryPhone"
+        type="tel"
+        value={libraryData.phone}
+        onChange={(e) => setLibraryData({...libraryData, phone: e.target.value})}
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+        placeholder="Enter phone number"
+        required
+      />
+    </div>
+
+    <div>
+      <label htmlFor="libraryPassword" className="block text-sm font-medium text-gray-700 mb-2">
+        Password *
+      </label>
+      <div className="relative">
+        <input
+          id="libraryPassword"
+          type={showPassword ? 'text' : 'password'}
+          value={libraryData.password}
+          onChange={(e) => setLibraryData({...libraryData, password: e.target.value})}
+          className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          placeholder="Enter password"
+          required
+        />
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+        >
+          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+        </button>
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      disabled={loading}
+      className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+    >
+      {loading ? 'Registering...' : 'Register Private Library'}
+    </button>
+  </form>
+);
+
 const StudentForm: React.FC<StudentFormProps> = ({
   studentData,
   setStudentData,
@@ -177,7 +284,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
   setShowPassword,
   loading,
   onSubmit,
-  // College search props
+  // College/Library search props
   collegeSearch,
   setCollegeSearch,
   collegeResults,
@@ -205,7 +312,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
 
     <div>
       <label htmlFor="college" className="block text-sm font-medium text-gray-700 mb-2">
-        College/Institution *
+        College/Library *
       </label>
       <div className="relative">
         <input
@@ -216,11 +323,11 @@ const StudentForm: React.FC<StudentFormProps> = ({
           className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
             collegeSearchError ? 'border-red-500' : 'border-gray-300'
           }`}
-          placeholder="Start typing to search for your college..."
+          placeholder="Start typing to search for your college or library..."
           required
         />
         
-        {/* College search results dropdown */}
+        {/* College/Library search results dropdown */}
         {showCollegeResults && (
           <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 overflow-y-auto">
             {collegeResults.map((college) => (
@@ -232,7 +339,9 @@ const StudentForm: React.FC<StudentFormProps> = ({
                 <div className="font-medium text-gray-900">
                   {college.name} {college.collegeCode && `(${college.collegeCode})`}
                 </div>
-                <div className="text-sm text-gray-500">Click to select</div>
+                <div className="text-sm text-gray-500">
+                  {college.type === 'institution' ? '🏫 Institution' : '📚 Private Library'} • Click to select
+                </div>
               </div>
             ))}
           </div>
@@ -246,11 +355,27 @@ const StudentForm: React.FC<StudentFormProps> = ({
           </div>
         )}
         
-        {/* Selected college indicator */}
+        {/* Selected college/library indicator */}
         {selectedCollegeId && (
-          <div className="mt-1 text-sm text-green-600 flex items-center">
-            <span className="mr-1">✅</span>
-            College selected
+          <div className="mt-2 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center text-green-700">
+              <span className="mr-2">✅</span>
+              <div>
+                <div className="font-medium">
+                  {collegeResults.find(c => c.id === selectedCollegeId)?.type === 'institution' ? (
+                    <span>🏫 Institution Selected</span>
+                  ) : (
+                    <span>📚 Private Library Selected</span>
+                  )}
+                </div>
+                <div className="text-sm text-green-600">
+                  {collegeResults.find(c => c.id === selectedCollegeId)?.name}
+                  {collegeResults.find(c => c.id === selectedCollegeId)?.collegeCode && (
+                    <span> • Code: {collegeResults.find(c => c.id === selectedCollegeId)?.collegeCode}</span>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -383,10 +508,10 @@ const StudentForm: React.FC<StudentFormProps> = ({
 );
 
 const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
-  const [userType, setUserType] = useState<'institution' | 'student' | null>(() => {
+  const [userType, setUserType] = useState<'institution' | 'student' | 'privateLibrary' | null>(() => {
     // Initialize from localStorage to persist state on refresh
     const savedUserType = localStorage.getItem('bookzone_register_userType');
-    return savedUserType as 'institution' | 'student' | null;
+    return savedUserType as 'institution' | 'student' | 'privateLibrary' | null;
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -414,9 +539,17 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
     address: ''
   });
 
-  // College search functionality
+  // Private Library form fields
+  const [libraryData, setLibraryData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    phone: ''
+  });
+
+  // College/Library search functionality
   const [collegeSearch, setCollegeSearch] = useState('');
-  const [collegeResults, setCollegeResults] = useState<Array<{id: string, name: string, collegeCode: string}>>([]);
+  const [collegeResults, setCollegeResults] = useState<Array<{id: string, name: string, collegeCode: string, type: string}>>([]);
   const [showCollegeResults, setShowCollegeResults] = useState(false);
   const [selectedCollegeId, setSelectedCollegeId] = useState('');
   const [collegeSearchError, setCollegeSearchError] = useState('');
@@ -478,21 +611,41 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
     }
 
     try {
-      const institutions = await institutionService.getAllInstitutions();
-      const filtered = institutions.filter(inst => 
-        inst.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        inst.collegeCode?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      const [institutions, privateLibraries] = await Promise.all([
+        institutionService.getAllInstitutions(),
+        privateLibraryService.getAllPrivateLibraries()
+      ]);
       
-      setCollegeResults(filtered.map(inst => ({ 
-        id: inst.id, 
-        name: inst.name,
-        collegeCode: inst.collegeCode || ''
-      })));
-      setShowCollegeResults(filtered.length > 0);
-      setCollegeSearchError(filtered.length === 0 ? 'College not registered' : '');
+      const institutionResults = institutions
+        .filter(inst => 
+          inst.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          inst.collegeCode?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .map(inst => ({ 
+          id: inst.id, 
+          name: inst.name,
+          collegeCode: inst.collegeCode || '',
+          type: 'institution'
+        }));
+
+      const libraryResults = privateLibraries
+        .filter(lib => 
+          lib.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          lib.libraryCode?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .map(lib => ({ 
+          id: lib.id, 
+          name: lib.name,
+          collegeCode: lib.libraryCode || '',
+          type: 'privateLibrary'
+        }));
+
+      const allResults = [...institutionResults, ...libraryResults];
+      setCollegeResults(allResults);
+      setShowCollegeResults(allResults.length > 0);
+      setCollegeSearchError(allResults.length === 0 ? 'No institutions or libraries found' : '');
     } catch (error) {
-      console.error('Error searching colleges:', error);
+      console.error('Error searching colleges and libraries:', error);
       setCollegeResults([]);
       setShowCollegeResults(false);
     }
@@ -507,7 +660,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
   };
 
   // Handle college selection
-  const handleCollegeSelect = (college: {id: string, name: string, collegeCode: string}) => {
+  const handleCollegeSelect = (college: {id: string, name: string, collegeCode: string, type: string}) => {
     setCollegeSearch(college.name);
     setStudentData({...studentData, college: college.name});
     setSelectedCollegeId(college.id);
@@ -528,6 +681,28 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
         isActive: true
       });
       setSuccess('Institution registered successfully! You can now login.');
+      setTimeout(() => {
+        if (onBackClick) onBackClick();
+      }, 2000);
+    } catch (error: any) {
+      setError(error.message || 'Registration failed. Please try again.');
+    }
+
+    setLoading(false);
+  };
+
+  const handlePrivateLibrarySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      await privateLibraryService.registerPrivateLibrary({
+        ...libraryData,
+        isActive: true
+      });
+      setSuccess('Private Library registered successfully! You can now login.');
       setTimeout(() => {
         if (onBackClick) onBackClick();
       }, 2000);
@@ -638,12 +813,25 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
                     <p className="text-sm text-gray-600">Register as a student to access your college library</p>
                   </div>
                 </button>
+
+                <button
+                  onClick={() => setUserType('privateLibrary')}
+                  className="w-full flex items-center space-x-4 p-6 border-2 border-gray-200 rounded-lg hover:border-indigo-500 hover:bg-indigo-50 transition-colors"
+                >
+                  <div className="p-3 bg-indigo-100 rounded-lg">
+                    <BookOpen className="w-6 h-6 text-indigo-600" />
+                  </div>
+                  <div className="text-left">
+                    <h3 className="font-semibold text-gray-900">Private Library</h3>
+                    <p className="text-sm text-gray-600">Register your own private library</p>
+                  </div>
+                </button>
               </div>
             ) : (
               <div>
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-lg font-semibold">
-                    Register as {userType === 'institution' ? 'Institution' : 'Student'}
+                    Register as {userType === 'institution' ? 'Institution' : userType === 'student' ? 'Student' : 'Private Library'}
                   </h2>
                   <button
                     onClick={() => setUserType(null)}
@@ -673,6 +861,15 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
                     setShowPassword={setShowPassword}
                     loading={loading}
                     onSubmit={handleInstitutionSubmit}
+                  />
+                ) : userType === 'privateLibrary' ? (
+                  <PrivateLibraryForm
+                    libraryData={libraryData}
+                    setLibraryData={setLibraryData}
+                    showPassword={showPassword}
+                    setShowPassword={setShowPassword}
+                    loading={loading}
+                    onSubmit={handlePrivateLibrarySubmit}
                   />
                 ) : (
                   <StudentForm
@@ -712,12 +909,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
             <p className="text-indigo-200 mb-6 max-w-2xl mx-auto">
               Empowering students through knowledge, one book at a time. Join our community of learners and discover the endless possibilities that await you.
             </p>
-
-            {/* Developer Credit */}
-            <p className="text-indigo-300 mb-6">
-              Developed by Anand Pandey
-            </p>
-
             <div className="border-t border-indigo-800 pt-6">
               <p className="text-indigo-300">
                 © 2025 BookZone Library. All rights reserved.
