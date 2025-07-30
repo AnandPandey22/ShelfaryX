@@ -305,6 +305,9 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
                 method="POST" 
                 className="space-y-6"
               >
+                {/* Hidden field to ensure full subject is captured */}
+                <input type="hidden" name="_subject" value="New Contact Form Submission - BookZone" />
+                
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
@@ -359,12 +362,12 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                   >
                     <option value="">Select a subject</option>
-                    <option value="general">General Inquiry</option>
-                    <option value="technical">Technical Support</option>
-                    <option value="books">Book Recommendations</option>
-                    <option value="account">Account Issues</option>
-                    <option value="institution">Institute Registration</option>
-                    <option value="feedback">Feedback</option>
+                    <option value="General Inquiry">General Inquiry</option>
+                    <option value="Technical Support">Technical Support</option>
+                    <option value="Book Recommendations">Book Recommendations</option>
+                    <option value="Account Issues">Account Issues</option>
+                    <option value="Institute Registration">Institute Registration</option>
+                    <option value="Feedback">Feedback</option>
                   </select>
                 </div>
 
