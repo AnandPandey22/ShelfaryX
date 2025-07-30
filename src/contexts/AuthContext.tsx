@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Librarian, Student, Institution, Admin } from '../types';
-import { librarianService, studentService, institutionService, adminService } from '../services/database';
+import { Librarian, Student, Institution, PrivateLibrary, Admin } from '../types';
+import { librarianService, studentService, institutionService, privateLibraryService, adminService } from '../services/database';
 
-type UserType = 'institution' | 'student' | 'librarian' | 'admin';
+type UserType = 'institution' | 'student' | 'librarian' | 'admin' | 'privateLibrary';
 
 interface AuthContextType {
-  currentUser: Librarian | Student | Institution | Admin | null;
+  currentUser: Librarian | Student | Institution | PrivateLibrary | Admin | null;
   userType: UserType | null;
   institutionId: string | null;
   login: (email: string, password: string) => Promise<boolean>;
@@ -24,7 +24,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<Librarian | Student | Institution | Admin | null>(null);
+  const [currentUser, setCurrentUser] = useState<Librarian | Student | Institution | PrivateLibrary | Admin | null>(null);
   const [userType, setUserType] = useState<UserType | null>(null);
   const [institutionId, setInstitutionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       // Try to authenticate as institution
-      let user: Librarian | Student | Institution | Admin | null = null;
+      let user: Librarian | Student | Institution | PrivateLibrary | Admin | null = null;
       let type: UserType = 'institution';
       let instId: string | null = null;
 
@@ -78,19 +78,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         type = 'institution';
         instId = institution.id;
       } else {
-        // Try to authenticate as student
-        const student = await studentService.authenticateStudent(email, password);
-        if (student) {
-          user = student;
-          type = 'student';
-          instId = student.institutionId;
+        // Try to authenticate as private library
+        const privateLibrary = await privateLibraryService.authenticatePrivateLibrary(email, password);
+        if (privateLibrary) {
+          user = privateLibrary;
+          type = 'privateLibrary';
+          instId = privateLibrary.id;
         } else {
-          // Try to authenticate as librarian
-          const librarian = await librarianService.authenticate(email, password);
-          if (librarian) {
-            user = librarian;
-            type = 'librarian';
-            instId = librarian.institutionId;
+          // Try to authenticate as student
+          const student = await studentService.authenticateStudent(email, password);
+          if (student) {
+            user = student;
+            type = 'student';
+            instId = student.institutionId;
+          } else {
+            // Try to authenticate as librarian
+            const librarian = await librarianService.authenticate(email, password);
+            if (librarian) {
+              user = librarian;
+              type = 'librarian';
+              instId = librarian.institutionId;
+            }
           }
         }
       }

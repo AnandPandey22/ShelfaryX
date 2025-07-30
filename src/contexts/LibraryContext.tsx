@@ -37,23 +37,26 @@ export const useLibrary = () => {
 };
 
 export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { institutionId } = useAuth();
+  const { institutionId, userType } = useAuth();
   const [books, setBooks] = useState<Book[]>([]);
   const [categories, setCategories] = useState<BookCategory[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
   const [issues, setIssues] = useState<BookIssue[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Use institutionId for both institutions and private libraries
+  const entityId = institutionId;
+
   const loadData = async () => {
-    if (!institutionId) return;
+    if (!entityId) return;
     
     try {
       setLoading(true);
       const [booksData, categoriesData, studentsData, issuesData] = await Promise.all([
-        bookService.getAllBooks(institutionId),
-        categoryService.getAllCategories(institutionId),
-        studentService.getAllStudents(institutionId),
-        issueService.getAllIssues(institutionId)
+        bookService.getAllBooks(entityId),
+        categoryService.getAllCategories(entityId),
+        studentService.getAllStudents(entityId),
+        issueService.getAllIssues(entityId)
       ]);
 
       setBooks(booksData);
@@ -69,17 +72,17 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     loadData();
-  }, [institutionId]);
+  }, [entityId]);
 
   const refreshData = async () => {
     await loadData();
   };
 
   const addBook = async (book: Omit<Book, 'id' | 'institutionId'>) => {
-    if (!institutionId) throw new Error('No institution ID');
+    if (!entityId) throw new Error('No entity ID');
     
-    const bookWithInstitution = { ...book, institutionId };
-    const newBook = await bookService.addBook(bookWithInstitution, institutionId);
+    const bookWithInstitution = { ...book, institutionId: entityId };
+    const newBook = await bookService.addBook(bookWithInstitution, entityId);
     setBooks(prev => [...prev, newBook]);
     
     // Update category book count
@@ -100,10 +103,10 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const addCategory = async (category: Omit<BookCategory, 'id' | 'bookCount' | 'institutionId'>) => {
-    if (!institutionId) throw new Error('No institution ID');
+    if (!entityId) throw new Error('No entity ID');
     
-    const categoryWithInstitution = { ...category, institutionId };
-    const newCategory = await categoryService.addCategory(categoryWithInstitution, institutionId);
+    const categoryWithInstitution = { ...category, institutionId: entityId };
+    const newCategory = await categoryService.addCategory(categoryWithInstitution, entityId);
     setCategories(prev => [...prev, newCategory]);
   };
 
@@ -118,10 +121,10 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const addStudent = async (student: Omit<Student, 'id' | 'institutionId'>) => {
-    if (!institutionId) throw new Error('No institution ID');
+    if (!entityId) throw new Error('No entity ID');
     
-    const studentWithInstitution = { ...student, institutionId };
-    const newStudent = await studentService.addStudent(studentWithInstitution, institutionId);
+    const studentWithInstitution = { ...student, institutionId: entityId };
+    const newStudent = await studentService.addStudent(studentWithInstitution, entityId);
     setStudents(prev => [...prev, newStudent]);
   };
 
@@ -136,10 +139,10 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const issueBook = async (issue: Omit<BookIssue, 'id' | 'institutionId'>) => {
-    if (!institutionId) throw new Error('No institution ID');
+    if (!entityId) throw new Error('No entity ID');
     
-    const issueWithInstitution = { ...issue, institutionId };
-    const newIssue = await issueService.issueBook(issueWithInstitution, institutionId);
+    const issueWithInstitution = { ...issue, institutionId: entityId };
+    const newIssue = await issueService.issueBook(issueWithInstitution, entityId);
     setIssues(prev => [...prev, newIssue]);
     
     // Update book available copies
@@ -157,7 +160,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
         message: `Your book "${book?.title}" has been issued successfully. Due date: ${issue.dueDate}. Please return it on time to avoid fines.`,
         type: 'issued',
         isRead: false,
-        institutionId
+        institutionId: entityId
       });
     } catch (error) {
       console.error('Error creating issue notification:', error);
@@ -193,7 +196,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       // Create notification for the student about the returned book
       try {
-        if (book && institutionId) {
+        if (book && entityId) {
           const fineMessage = finalFine > 0 ? ` Fine collected: ₹${finalFine}.` : '';
           await notificationService.createNotification({
             userId: issue.studentId,
@@ -202,7 +205,7 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
             message: `Your book "${book.title}" has been returned successfully.${fineMessage} Thank you for using the library!`,
             type: 'returned',
             isRead: false,
-            institutionId
+            institutionId: entityId
           });
         }
       } catch (error) {
