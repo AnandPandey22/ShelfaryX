@@ -104,7 +104,7 @@ const DownloadInvoice: React.FC = () => {
       doc.text('Order Date:', 20, 94);
       doc.text(formatDate(issue.issueDate), 50, 94);
 
-       doc.text('Issuer's Phone:', 20, 101);
+       doc.text('Issuer Phone:', 20, 101);
       doc.text(issuerPhone, 50, 101);
       
       // Right column
@@ -117,7 +117,7 @@ const DownloadInvoice: React.FC = () => {
       doc.text('Issued By:', 120, 94);
       doc.text(currentUser?.name || 'BookZone', 150, 94);
 
-      doc.text('Issuer's Email:', 120, 101);
+      doc.text('Issuer Email:', 120, 101);
       doc.text(issuerEmail, 150, 101);
       
       // Student Information Section
