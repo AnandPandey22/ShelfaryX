@@ -1,10 +1,13 @@
 import React from 'react';
 import { useLibrary } from '../contexts/LibraryContext';
+import { useAuth } from '../contexts/AuthContext';
+import { institutionService } from '../services/database';
 import { BookOpen, User, Calendar, Download, FileText, MapPin, Phone, Mail, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 const DownloadInvoice: React.FC = () => {
   const { books, students, issues } = useLibrary();
+  const { currentUser } = useAuth();
 
   // Helper function to format date
   const formatDate = (dateString: string) => {
@@ -21,7 +24,7 @@ const DownloadInvoice: React.FC = () => {
   const issuedBooks = issues.filter(issue => issue.status === 'issued' || issue.status === 'overdue');
 
   // Generate PDF invoice
-  const generateInvoice = (issue: any) => {
+  const generateInvoice = async (issue: any) => {
     console.log('Generating invoice for issue:', issue);
     
     // Validate issue object
@@ -50,6 +53,22 @@ const DownloadInvoice: React.FC = () => {
     }
 
     try {
+      // Get institution details for issuer information
+      let issuerEmail = 'bookzonelibrary@outlook.com';
+      let issuerPhone = '+91-9878955679';
+      
+      if (issue.institutionId) {
+        try {
+          const institution = await institutionService.getInstitutionById(issue.institutionId);
+          if (institution) {
+            issuerEmail = institution.email;
+            issuerPhone = institution.phone;
+          }
+        } catch (error) {
+          console.warn('Could not fetch institution details:', error);
+        }
+      }
+
       console.log('Creating PDF document...');
       const doc = new jsPDF();
       
@@ -63,8 +82,8 @@ const DownloadInvoice: React.FC = () => {
       doc.text('Library Management System', 105, 30, { align: 'center' });
       
       doc.setFontSize(10);
-      doc.text('info@bookzone.com', 105, 40, { align: 'center' });
-      doc.text('+91-1234567890', 105, 47, { align: 'center' });
+      doc.text('bookzonelibrary@outlook.com', 105, 40, { align: 'center' });
+      doc.text('+91-9878955679', 105, 47, { align: 'center' });
       
       // Invoice Title
       doc.setFontSize(18);
@@ -84,6 +103,9 @@ const DownloadInvoice: React.FC = () => {
       
       doc.text('Order Date:', 20, 94);
       doc.text(formatDate(issue.issueDate), 50, 94);
+
+       doc.text('Issuer's Phone:', 20, 101);
+      doc.text(issuerPhone, 50, 101);
       
       // Right column
       doc.text('Issue Date:', 120, 80);
@@ -93,7 +115,10 @@ const DownloadInvoice: React.FC = () => {
       doc.text(formatDate(issue.dueDate), 150, 87);
       
       doc.text('Issued By:', 120, 94);
-      doc.text('BookZone', 150, 94);
+      doc.text(currentUser?.name || 'BookZone', 150, 94);
+
+      doc.text('Issuer's Email:', 120, 101);
+      doc.text(issuerEmail, 150, 101);
       
       // Student Information Section
       doc.setFontSize(12);
