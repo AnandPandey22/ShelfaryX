@@ -2,7 +2,7 @@ import React from 'react';
 import { BookOpen, User, Calendar, Download, FileText, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import { useAuth } from '../../contexts/AuthContext';
-import { institutionService } from '../../services/database';
+import { institutionService, privateLibraryService } from '../../services/database';
 import { Book, BookIssue } from '../../types';
 
 interface StudentDownloadInvoiceProps {
@@ -59,22 +59,33 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
     }
 
     try {
-      // Get institution details for issuer information
+      // Get institution/private library details for issuer information
       let issuerEmail = 'bookzonelibrary@outlook.com';
       let issuerPhone = '+91-9878955679';
+      let issuerName = 'BookZone';
       
       if (issue.institutionId) {
         try {
+          // First try to get institution details
           const institution = await institutionService.getInstitutionById(issue.institutionId);
           if (institution) {
             issuerEmail = institution.email;
             issuerPhone = institution.phone;
+            issuerName = institution.name;
+          } else {
+            // If not found in institutions, try private libraries
+            const privateLibrary = await privateLibraryService.getPrivateLibraryById(issue.institutionId);
+            if (privateLibrary) {
+              issuerEmail = privateLibrary.email;
+              issuerPhone = privateLibrary.phone;
+              issuerName = privateLibrary.name;
+            }
           }
         } catch (error) {
-          console.warn('Could not fetch institution details:', error);
+          console.warn('Could not fetch institution/private library details:', error);
         }
       }
-      
+
       console.log('Creating PDF document...');
       const doc = new jsPDF();
       
@@ -88,8 +99,8 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       doc.text('Library Management System', 105, 30, { align: 'center' });
       
       doc.setFontSize(10);
-      doc.text('bookzonelibrary@outlook.com', 105, 40, { align: 'center' });
-      doc.text('+91-9878955679', 105, 47, { align: 'center' });
+      doc.text(issuerEmail, 105, 40, { align: 'center' });
+      doc.text(issuerPhone, 105, 47, { align: 'center' });
       
       // Invoice Title
       doc.setFontSize(18);
@@ -109,7 +120,7 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       
       doc.text('Order Date:', 20, 94);
       doc.text(formatDate(issue.issueDate), 50, 94);
-
+      
       doc.text('Issuer Phone:', 20, 101);
       doc.text(issuerPhone, 50, 101);
       
@@ -121,8 +132,8 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       doc.text(formatDate(issue.dueDate), 150, 87);
       
       doc.text('Issued By:', 120, 94);
-     doc.text(issue.issuedBy || 'Institution', 150, 94);
-
+      doc.text(issuerName, 150, 94);
+      
       doc.text('Issuer Email:', 120, 101);
       doc.text(issuerEmail, 150, 101);
       
