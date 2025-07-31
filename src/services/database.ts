@@ -667,10 +667,7 @@ export const adminService = {
   async getAllStudentsForAdmin(): Promise<Student[]> {
     const { data, error } = await supabase
       .from(TABLES.STUDENTS)
-      .select(`
-        *,
-        institutions(name)
-      `)
+      .select('*')
       .order('name');
     
     if (error) throw error;
@@ -683,8 +680,7 @@ export const adminService = {
       .from(TABLES.BOOKS)
       .select(`
         *,
-        categories(name),
-        institutions(name)
+        categories(name)
       `)
       .order('title');
     
@@ -705,8 +701,7 @@ export const adminService = {
       .select(`
         *,
         books(title, author),
-        students(name, student_id),
-        institutions(name)
+        students(name, student_id)
       `)
       .order('issue_date', { ascending: false });
     
