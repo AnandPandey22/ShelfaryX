@@ -797,6 +797,34 @@ export const adminService = {
     return toCamelCase(data);
   },
 
+  // Admin: Update private library
+  async updatePrivateLibrary(id: string, updates: Partial<PrivateLibrary>): Promise<PrivateLibrary> {
+    const snakeUpdates = toSnakeCase(updates);
+    const { data, error } = await supabase
+      .from(TABLES.PRIVATE_LIBRARIES)
+      .update(snakeUpdates)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return toCamelCase(data);
+  },
+
+  // Admin: Add new private library
+  async addPrivateLibrary(library: Omit<PrivateLibrary, 'id' | 'createdAt' | 'libraryCode'>): Promise<PrivateLibrary> {
+    const libraryCode = generateLibraryCode();
+    const snakeLibrary = toSnakeCase({ ...library, libraryCode });
+    const { data, error } = await supabase
+      .from(TABLES.PRIVATE_LIBRARIES)
+      .insert([snakeLibrary])
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return toCamelCase(data);
+  },
+
   // Admin: Update student
   async updateStudent(id: string, updates: Partial<Student>): Promise<Student> {
     const snakeUpdates = toSnakeCase(updates);
