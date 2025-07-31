@@ -234,11 +234,20 @@ export const bookService = {
     const { data, error } = await supabase
       .from(TABLES.BOOKS)
       .insert([snakeBook])
-      .select()
+      .select(`
+        *,
+        categories(name)
+      `)
       .single();
     
     if (error) throw error;
-    return toCamelCase(data);
+    
+    // Transform data and map category name
+    const transformedData = toCamelCase(data);
+    return {
+      ...transformedData,
+      category: transformedData.categories?.name || null
+    };
   },
 
   // Update book
@@ -248,11 +257,20 @@ export const bookService = {
       .from(TABLES.BOOKS)
       .update(snakeUpdates)
       .eq('id', id)
-      .select()
+      .select(`
+        *,
+        categories(name)
+      `)
       .single();
     
     if (error) throw error;
-    return toCamelCase(data);
+    
+    // Transform data and map category name
+    const transformedData = toCamelCase(data);
+    return {
+      ...transformedData,
+      category: transformedData.categories?.name || null
+    };
   },
 
   // Delete book
