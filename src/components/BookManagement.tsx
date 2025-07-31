@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Plus, Search, Edit, Trash2, BookOpen } from 'lucide-react';
 import { useLibrary } from '../contexts/LibraryContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Book } from '../types';
+import AddOptionsModal from './AddOptionsModal';
 
 const BookManagement: React.FC = () => {
-  const { books, categories, addBook, updateBook, deleteBook, loading } = useLibrary();
+  const { books, categories, addBook, updateBook, deleteBook, addCategory, refreshData, loading } = useLibrary();
+  const { institutionId } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showAddOptionsModal, setShowAddOptionsModal] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [submitting, setSubmitting] = useState(false);
   
@@ -111,6 +115,122 @@ const BookManagement: React.FC = () => {
     }
   };
 
+  const handleBulkImport = async (booksData: any[]): Promise<{ success: number; errors: string[] }> => {
+    const errors: string[] = [];
+    let successCount = 0;
+    const createdCategories: string[] = [];
+    const categoryService = (await import('../services/database')).categoryService;
+
+    try {
+      // First, collect all unique categories that need to be created
+      const categoriesToCreate = new Set<string>();
+      const existingCategories = new Map<string, any>();
+      
+      // Build map of existing categories
+      categories.forEach(cat => {
+        existingCategories.set(cat.name.toLowerCase(), cat);
+      });
+      
+      // Find categories that need to be created
+      booksData.forEach(bookData => {
+        const categoryName = bookData.category.toLowerCase();
+        if (!existingCategories.has(categoryName)) {
+          categoriesToCreate.add(bookData.category); // Use original case
+        }
+      });
+      
+      // Create all missing categories at once
+      const newCategories = new Map<string, any>();
+      for (const categoryName of categoriesToCreate) {
+        try {
+          const newCategory = await categoryService.addCategory({
+            name: categoryName,
+            description: `Auto-created from bulk import`,
+            institutionId: institutionId
+          }, institutionId);
+          
+          newCategories.set(categoryName.toLowerCase(), newCategory);
+          createdCategories.push(categoryName);
+          console.log(`Auto-created category: ${categoryName}`);
+        } catch (categoryError) {
+          console.error(`Error creating category "${categoryName}":`, categoryError);
+          errors.push(`Failed to create category "${categoryName}": ${categoryError instanceof Error ? categoryError.message : 'Unknown error'}`);
+        }
+      }
+      
+      // Refresh categories once after creating all missing categories
+      if (categoriesToCreate.size > 0) {
+        await refreshData();
+      }
+      
+      // Now process all books in batch
+      const booksToAdd = [];
+      const duplicateBooks = [];
+      
+      for (const bookData of booksData) {
+        // Check for duplicate ISBN
+        const existingBook = books.find(book => book.isbn.toLowerCase() === bookData.isbn.toLowerCase());
+        if (existingBook) {
+          duplicateBooks.push(`Book with ISBN "${bookData.isbn}" already exists: "${existingBook.title}"`);
+          continue;
+        }
+
+        // Find category (either existing or newly created)
+        let category = existingCategories.get(bookData.category.toLowerCase()) || 
+                      newCategories.get(bookData.category.toLowerCase()) ||
+                      categories.find(c => c.name.toLowerCase() === bookData.category.toLowerCase());
+        
+        if (!category) {
+          errors.push(`Category "${bookData.category}" not found for book "${bookData.title}"`);
+          continue;
+        }
+
+        booksToAdd.push({
+          title: bookData.title,
+          author: bookData.author,
+          isbn: bookData.isbn,
+          categoryId: category.id,
+          publisher: bookData.publisher,
+          publishYear: bookData.publishYear,
+          totalCopies: bookData.totalCopies,
+          availableCopies: bookData.availableCopies,
+          description: bookData.description,
+        });
+      }
+      
+      // Add duplicate errors
+      errors.push(...duplicateBooks);
+      
+      // Add all books at once using the service directly
+      if (booksToAdd.length > 0) {
+        try {
+          const bookService = (await import('../services/database')).bookService;
+          
+          for (const bookData of booksToAdd) {
+            await bookService.addBook(bookData, institutionId);
+            successCount++;
+          }
+          
+          // Refresh data once after adding all books
+          await refreshData();
+        } catch (error) {
+          console.error('Error adding books in batch:', error);
+          errors.push(`Failed to add books in batch: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+      
+      // Add info about auto-created categories
+      if (createdCategories.length > 0) {
+        errors.unshift(`✅ Auto-created ${createdCategories.length} new category/categories: ${createdCategories.join(', ')}`);
+      }
+    } catch (error) {
+      console.error('Bulk import error:', error);
+      errors.push(`Bulk import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    return { success: successCount, errors };
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -130,7 +250,7 @@ const BookManagement: React.FC = () => {
           <p className="text-gray-600 mt-2">Manage your library's book collection</p>
         </div>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => setShowAddOptionsModal(true)}
           className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
         >
           <Plus className="w-5 h-5" />
@@ -188,7 +308,7 @@ const BookManagement: React.FC = () => {
                     <div>
                       <span className="text-gray-500">Category:</span>
                       <span className="ml-1 inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                        {book.category}
+                        {book.category || 'Unknown'}
                       </span>
                     </div>
                     <div>
@@ -225,7 +345,7 @@ const BookManagement: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Books Found</h3>
               <p className="text-gray-600 mb-6">Get started by adding your first book to the library collection.</p>
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowAddOptionsModal(true)}
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
               >
                 <Plus className="w-5 h-5" />
@@ -269,7 +389,7 @@ const BookManagement: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{book.author}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="inline-flex px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                        {book.category}
+                        {book.category || 'Unknown'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{book.isbn}</td>
@@ -309,7 +429,7 @@ const BookManagement: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Books Found</h3>
               <p className="text-gray-600 mb-6">Get started by adding your first book to the library collection.</p>
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowAddOptionsModal(true)}
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
               >
                 <Plus className="w-5 h-5" />
@@ -456,6 +576,20 @@ const BookManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Add Options Modal */}
+      <AddOptionsModal
+        isOpen={showAddOptionsModal}
+        onClose={() => setShowAddOptionsModal(false)}
+        type="books"
+        categories={categories}
+        onManualAdd={() => {
+          setShowAddOptionsModal(false);
+          setShowModal(true);
+        }}
+        onBulkImport={handleBulkImport}
+        institutionId={undefined} // Will be handled by the context
+      />
     </div>
   );
 };

@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { Plus, Search, Edit, Trash2, User, Phone, MapPin, GraduationCap } from 'lucide-react';
 import { useLibrary } from '../contexts/LibraryContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Student } from '../types';
+import AddOptionsModal from './AddOptionsModal';
 
 const StudentManagement: React.FC = () => {
-  const { students, addStudent, updateStudent, deleteStudent, loading } = useLibrary();
+  const { students, addStudent, updateStudent, deleteStudent, loading, refreshData } = useLibrary();
+  const { institutionId } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [showAddOptionsModal, setShowAddOptionsModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [submitting, setSubmitting] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
     studentId: '',
+    email: '',
     class: '',
     section: '',
     mobileNumber: '',
@@ -32,6 +37,7 @@ const StudentManagement: React.FC = () => {
     setFormData({
       name: '',
       studentId: '',
+      email: '',
       class: '',
       section: '',
       mobileNumber: '',
@@ -52,8 +58,8 @@ const StudentManagement: React.FC = () => {
         await addStudent({
           ...formData,
           // Set default values for required fields that are not in the manual form
-          email: `${formData.studentId.toLowerCase()}@college.edu`, // Generate email from student ID
-          password: 'password123', // Default password
+          email: formData.email || `${formData.studentId.toLowerCase()}@college.edu`, // Use provided email or generate default
+          password: 'password123', // Default password - student can reset via forgot password
           class: formData.class, // Use class from form
           course: formData.class, // Use class as course
           college: 'College', // Default college
@@ -78,6 +84,7 @@ const StudentManagement: React.FC = () => {
     setFormData({
       name: student.name,
       studentId: student.studentId,
+      email: student.email,
       class: student.class,
       section: student.section,
       mobileNumber: student.mobileNumber,
@@ -96,6 +103,49 @@ const StudentManagement: React.FC = () => {
         alert('Error deleting student. Please try again.');
       }
     }
+  };
+
+  const handleBulkImport = async (studentsData: any[]): Promise<{ success: number; errors: string[] }> => {
+    const errors: string[] = [];
+    let successCount = 0;
+
+    try {
+      // Process all students in batch
+      const studentsToAdd = [];
+      const duplicateStudents = [];
+      
+      for (const studentData of studentsData) {
+        // Check for duplicate Student ID
+        const existingStudent = students.find(student => student.studentId.toLowerCase() === studentData.studentId.toLowerCase());
+        if (existingStudent) {
+          duplicateStudents.push(`Student with ID "${studentData.studentId}" already exists: "${existingStudent.name}"`);
+          continue;
+        }
+
+        studentsToAdd.push(studentData);
+      }
+      
+      // Add duplicate errors
+      errors.push(...duplicateStudents);
+      
+      // Add all students at once using the service directly
+      if (studentsToAdd.length > 0 && institutionId) {
+        const studentService = (await import('../services/database')).studentService;
+        
+        for (const studentData of studentsToAdd) {
+          await studentService.addStudent(studentData, institutionId);
+          successCount++;
+        }
+        
+        // Refresh data once after adding all students
+        await refreshData();
+      }
+    } catch (error) {
+      console.error('Bulk import error:', error);
+      errors.push(`Bulk import failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+
+    return { success: successCount, errors };
   };
 
   const toggleStudentStatus = async (id: string, currentStatus: boolean) => {
@@ -126,7 +176,7 @@ const StudentManagement: React.FC = () => {
           <p className="text-gray-600 mt-2">Manage student registrations and information</p>
         </div>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => setShowAddOptionsModal(true)}
           className="w-full sm:w-auto bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center justify-center space-x-2"
         >
           <Plus className="w-5 h-5" />
@@ -233,7 +283,7 @@ const StudentManagement: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Students Found</h3>
               <p className="text-gray-600 mb-6">Get started by adding your first student to the library system.</p>
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowAddOptionsModal(true)}
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
               >
                 <Plus className="w-5 h-5" />
@@ -320,7 +370,7 @@ const StudentManagement: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Students Found</h3>
               <p className="text-gray-600 mb-6">Get started by adding your first student to the library system.</p>
               <button
-                onClick={() => setShowModal(true)}
+                onClick={() => setShowAddOptionsModal(true)}
                 className="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition-colors flex items-center space-x-2 mx-auto"
               >
                 <Plus className="w-5 h-5" />
@@ -338,6 +388,9 @@ const StudentManagement: React.FC = () => {
               <h2 className="text-xl font-semibold text-gray-900">
                 {editingStudent ? 'Edit Student' : 'Add New Student'}
               </h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Students will receive a default password and can reset it using their email address
+              </p>
             </div>
             
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -364,6 +417,20 @@ const StudentManagement: React.FC = () => {
                     placeholder="e.g., CS2021001"
                     required
                   />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="student@email.com"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Students can reset their password using "Forgot Password" on the login page
+                  </p>
                 </div>
                 
                 <div>
@@ -458,6 +525,20 @@ const StudentManagement: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Add Options Modal */}
+      <AddOptionsModal
+        isOpen={showAddOptionsModal}
+        onClose={() => setShowAddOptionsModal(false)}
+        type="students"
+        categories={[]}
+        onManualAdd={() => {
+          setShowAddOptionsModal(false);
+          setShowModal(true);
+        }}
+        onBulkImport={handleBulkImport}
+        institutionId={undefined} // Will be handled by the context
+      />
     </div>
   );
 };
