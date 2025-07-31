@@ -217,7 +217,7 @@ const AdminPanel: React.FC = () => {
                          <div key={issue.id} className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-md hover:bg-gray-50 transition-all duration-200 cursor-pointer">
                           <div>
                             <p className="font-medium text-gray-900">{book?.title}</p>
-                            <p className="text-sm text-gray-600">{student?.name} • {institution?.name}</p>
+                            <p className="text-sm text-gray-600">{student?.name} • {institution?.name || 'Unknown Institution'}</p>
                           </div>
                           <div className="text-right">
                             <p className="text-sm text-gray-500">Due: {issue.dueDate}</p>
