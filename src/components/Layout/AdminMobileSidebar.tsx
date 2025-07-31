@@ -34,6 +34,7 @@ const AdminMobileSidebar: React.FC<AdminMobileSidebarProps> = ({
   const menuItems = [
     { id: 'overview', name: 'Overview', icon: TrendingUp },
     { id: 'institutions', name: 'Institutions', icon: Building2 },
+    { id: 'privateLibraries', name: 'Private Libraries', icon: Library },
     { id: 'students', name: 'Students', icon: Users },
     { id: 'books', name: 'Books', icon: BookOpen },
     { id: 'issues', name: 'Issues', icon: ClipboardList },
