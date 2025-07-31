@@ -1,21 +1,23 @@
 import React, { useState } from 'react';
 import { Search, ClipboardList, BookOpen, Users, Building2, Calendar, AlertTriangle } from 'lucide-react';
-import { BookIssue, Book, Student, Institution } from '../../types';
+import { BookIssue, Book, Student, Institution, PrivateLibrary } from '../../types';
 
 interface AdminIssuesProps {
   issues: BookIssue[];
   books: Book[];
   students: Student[];
   institutions: Institution[];
+  privateLibraries: PrivateLibrary[];
 }
 
-const AdminIssues: React.FC<AdminIssuesProps> = ({ issues, books, students, institutions }) => {
+const AdminIssues: React.FC<AdminIssuesProps> = ({ issues, books, students, institutions, privateLibraries }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredIssues = issues.filter(issue => {
     const book = books.find(b => b.id === issue.bookId);
     const student = students.find(s => s.id === issue.studentId);
     const institution = institutions.find(i => i.id === issue.institutionId);
+    const library = privateLibraries.find(l => l.id === issue.institutionId);
     
     return (
       book?.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -23,6 +25,7 @@ const AdminIssues: React.FC<AdminIssuesProps> = ({ issues, books, students, inst
       student?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student?.studentId.toLowerCase().includes(searchTerm.toLowerCase()) ||
       institution?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      library?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       issue.status.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
@@ -43,8 +46,21 @@ const AdminIssues: React.FC<AdminIssuesProps> = ({ issues, books, students, inst
   };
 
   const getInstitutionName = (institutionId: string) => {
-    const institution = institutions.find(i => i.id === institutionId);
-    return institution?.name || 'Unknown Institution';
+    // Try exact match first
+    let institution = institutions.find(i => i.id === institutionId);
+    if (institution) return institution.name;
+    
+    let library = privateLibraries.find(l => l.id === institutionId);
+    if (library) return library.name;
+    
+    // Try string comparison (in case of type mismatch)
+    institution = institutions.find(i => String(i.id) === String(institutionId));
+    if (institution) return institution.name;
+    
+    library = privateLibraries.find(l => String(l.id) === String(institutionId));
+    if (library) return library.name;
+    
+    return 'Unknown';
   };
 
   const totalIssues = issues.length;

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Search, BookOpen, User, Calendar, Building2, Hash } from 'lucide-react';
-import { Book, Institution } from '../../types';
+import { Book, Institution, PrivateLibrary } from '../../types';
 
 interface AdminBooksProps {
   books: Book[];
   institutions: Institution[];
+  privateLibraries: PrivateLibrary[];
 }
 
-const AdminBooks: React.FC<AdminBooksProps> = ({ books, institutions }) => {
+const AdminBooks: React.FC<AdminBooksProps> = ({ books, institutions, privateLibraries }) => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredBooks = books.filter(book =>
@@ -19,8 +20,21 @@ const AdminBooks: React.FC<AdminBooksProps> = ({ books, institutions }) => {
   );
 
   const getInstitutionName = (institutionId: string) => {
-    const institution = institutions.find(i => i.id === institutionId);
-    return institution?.name || 'Unknown Institution';
+    // Try exact match first
+    let institution = institutions.find(i => i.id === institutionId);
+    if (institution) return institution.name;
+    
+    let library = privateLibraries.find(l => l.id === institutionId);
+    if (library) return library.name;
+    
+    // Try string comparison (in case of type mismatch)
+    institution = institutions.find(i => String(i.id) === String(institutionId));
+    if (institution) return institution.name;
+    
+    library = privateLibraries.find(l => String(l.id) === String(institutionId));
+    if (library) return library.name;
+    
+    return 'Unknown';
   };
 
   const totalBooks = books.reduce((sum, book) => sum + book.totalCopies, 0);

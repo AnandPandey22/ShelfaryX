@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { Search, Users, Mail, Phone, MapPin, Calendar, Building2, Plus, Edit, Trash2 } from 'lucide-react';
-import { Student, Institution } from '../../types';
+import { Student, Institution, PrivateLibrary } from '../../types';
 import StudentModal from './StudentModal';
 
 interface AdminStudentsProps {
   students: Student[];
   institutions: Institution[];
+  privateLibraries: PrivateLibrary[];
   onRefresh?: () => void;
 }
 
-const AdminStudents: React.FC<AdminStudentsProps> = ({ students, institutions, onRefresh }) => {
+const AdminStudents: React.FC<AdminStudentsProps> = ({ students, institutions, privateLibraries, onRefresh }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -43,8 +44,21 @@ const AdminStudents: React.FC<AdminStudentsProps> = ({ students, institutions, o
   };
 
   const getInstitutionName = (institutionId: string) => {
-    const institution = institutions.find(i => i.id === institutionId);
-    return institution?.name || 'Unknown Institution';
+    // Try exact match first
+    let institution = institutions.find(i => i.id === institutionId);
+    if (institution) return institution.name;
+    
+    let library = privateLibraries.find(l => l.id === institutionId);
+    if (library) return library.name;
+    
+    // Try string comparison (in case of type mismatch)
+    institution = institutions.find(i => String(i.id) === String(institutionId));
+    if (institution) return institution.name;
+    
+    library = privateLibraries.find(l => String(l.id) === String(institutionId));
+    if (library) return library.name;
+    
+    return 'Unknown';
   };
 
   return (
@@ -167,10 +181,10 @@ const AdminStudents: React.FC<AdminStudentsProps> = ({ students, institutions, o
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <div>
                       <span className="text-gray-500">Institution:</span>
-                      <div className="flex items-center mt-1">
-                        <Building2 className="w-3 h-3 mr-1 text-gray-400" />
-                        <span className="text-gray-900">{getInstitutionName(student.institutionId)}</span>
-                      </div>
+                                              <div className="flex items-center mt-1">
+                          <Building2 className="w-3 h-3 mr-1 text-gray-400" />
+                          <span className="text-gray-900">{getInstitutionName(student.institutionId)}</span>
+                        </div>
                     </div>
                     <div>
                       <span className="text-gray-500">Status:</span>

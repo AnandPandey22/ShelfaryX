@@ -3,6 +3,7 @@ import { Building2, Users, BookOpen, ClipboardList, AlertTriangle, CheckCircle, 
 import { useAuth } from '../../contexts/AuthContext';
 import { adminService } from '../../services/database';
 import AdminInstitutions from './AdminInstitutions';
+import AdminPrivateLibraries from './AdminPrivateLibraries';
 import AdminStudents from './AdminStudents';
 import AdminBooks from './AdminBooks';
 import AdminIssues from './AdminIssues';
@@ -13,7 +14,7 @@ const AdminPanel: React.FC = () => {
   const { logout } = useAuth();
   const [statistics, setStatistics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'institutions' | 'students' | 'books' | 'issues'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'institutions' | 'privateLibraries' | 'students' | 'books' | 'issues'>('overview');
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -117,6 +118,7 @@ const AdminPanel: React.FC = () => {
   const tabs = [
     { id: 'overview', name: 'Overview', icon: TrendingUp },
     { id: 'institutions', name: 'Institutions', icon: Building2 },
+    { id: 'privateLibraries', name: 'Private Libraries', icon: Building2 },
     { id: 'students', name: 'Students', icon: Users },
     { id: 'books', name: 'Books', icon: BookOpen },
     { id: 'issues', name: 'Issues', icon: ClipboardList },
@@ -208,10 +210,10 @@ const AdminPanel: React.FC = () => {
                 <div className="bg-gray-50 rounded-xl p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activities</h2>
                   <div className="space-y-3">
-                    {statistics.issues.slice(0, 5).map((issue) => {
-                      const book = statistics.books.find(b => b.id === issue.bookId);
-                      const student = statistics.students.find(s => s.id === issue.studentId);
-                      const institution = statistics.institutions.find(i => i.id === issue.institutionId);
+                    {statistics.issues.slice(0, 5).map((issue: any) => {
+                      const book = statistics.books.find((b: any) => b.id === issue.bookId);
+                      const student = statistics.students.find((s: any) => s.id === issue.studentId);
+                      const institution = statistics.institutions.find((i: any) => i.id === issue.institutionId);
                       
                                              return (
                          <div key={issue.id} className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-md hover:bg-gray-50 transition-all duration-200 cursor-pointer">
@@ -238,24 +240,51 @@ const AdminPanel: React.FC = () => {
                 </div>
 
                 <div className="bg-gray-50 rounded-xl p-6">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">Top Institutions</h2>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">Top Institutions & Libraries</h2>
                   <div className="space-y-3">
+                    {/* Institutions */}
                     {statistics.institutions
-                      .sort((a, b) => {
-                        const aStudents = statistics.students.filter(s => s.institutionId === a.id).length;
-                        const bStudents = statistics.students.filter(s => s.institutionId === b.id).length;
+                      .sort((a: any, b: any) => {
+                        const aStudents = statistics.students.filter((s: any) => String(s.institutionId) === String(a.id)).length;
+                        const bStudents = statistics.students.filter((s: any) => String(s.institutionId) === String(b.id)).length;
                         return bStudents - aStudents;
                       })
-                      .slice(0, 5)
-                      .map((institution) => {
-                        const studentCount = statistics.students.filter(s => s.institutionId === institution.id).length;
-                        const bookCount = statistics.books.filter(b => b.institutionId === institution.id).length;
+                      .slice(0, 3)
+                      .map((institution: any) => {
+                        const studentCount = statistics.students.filter((s: any) => String(s.institutionId) === String(institution.id)).length;
+                        const bookCount = statistics.books.filter((b: any) => String(b.institutionId) === String(institution.id)).length;
                         
-                                                 return (
-                           <div key={institution.id} className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-md hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+                        return (
+                          <div key={institution.id} className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-md hover:bg-gray-50 transition-all duration-200 cursor-pointer">
                             <div>
                               <p className="font-medium text-gray-900">{institution.name}</p>
-                              <p className="text-sm text-gray-600">{institution.collegeCode}</p>
+                              <p className="text-sm text-gray-600">{institution.collegeCode} (Institution)</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-sm font-medium text-gray-900">{studentCount} students</p>
+                              <p className="text-xs text-gray-500">{bookCount} books</p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    
+                    {/* Private Libraries */}
+                    {statistics.privateLibraries
+                      .sort((a: any, b: any) => {
+                        const aStudents = statistics.students.filter((s: any) => String(s.institutionId) === String(a.id)).length;
+                        const bStudents = statistics.students.filter((s: any) => String(s.institutionId) === String(b.id)).length;
+                        return bStudents - aStudents;
+                      })
+                      .slice(0, 2)
+                      .map((library: any) => {
+                        const studentCount = statistics.students.filter((s: any) => String(s.institutionId) === String(library.id)).length;
+                        const bookCount = statistics.books.filter((b: any) => String(b.institutionId) === String(library.id)).length;
+                        
+                        return (
+                          <div key={library.id} className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-md hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+                            <div>
+                              <p className="font-medium text-gray-900">{library.name}</p>
+                              <p className="text-sm text-gray-600">{library.libraryCode} (Private Library)</p>
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-medium text-gray-900">{studentCount} students</p>
@@ -275,19 +304,24 @@ const AdminPanel: React.FC = () => {
               <AdminInstitutions institutions={statistics.institutions} onRefresh={handleDataRefresh} />
             </div>
           )}
+          {activeTab === 'privateLibraries' && (
+            <div className="overflow-y-auto scrollbar-hide">
+              <AdminPrivateLibraries privateLibraries={statistics.privateLibraries} onRefresh={handleDataRefresh} />
+            </div>
+          )}
           {activeTab === 'students' && (
             <div className="overflow-y-auto scrollbar-hide">
-              <AdminStudents students={statistics.students} institutions={statistics.institutions} onRefresh={handleDataRefresh} />
+              <AdminStudents students={statistics.students} institutions={statistics.institutions} privateLibraries={statistics.privateLibraries} onRefresh={handleDataRefresh} />
             </div>
           )}
           {activeTab === 'books' && (
             <div className="overflow-y-auto scrollbar-hide">
-              <AdminBooks books={statistics.books} institutions={statistics.institutions} />
+              <AdminBooks books={statistics.books} institutions={statistics.institutions} privateLibraries={statistics.privateLibraries} />
             </div>
           )}
           {activeTab === 'issues' && (
             <div className="overflow-y-auto scrollbar-hide">
-              <AdminIssues issues={statistics.issues} books={statistics.books} students={statistics.students} institutions={statistics.institutions} />
+              <AdminIssues issues={statistics.issues} books={statistics.books} students={statistics.students} institutions={statistics.institutions} privateLibraries={statistics.privateLibraries} />
             </div>
           )}
         </div>
