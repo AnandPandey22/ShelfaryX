@@ -210,16 +210,27 @@ const AdminPanel: React.FC = () => {
                 <div className="bg-gray-50 rounded-xl p-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activities</h2>
                   <div className="space-y-3">
-                    {statistics.issues.slice(0, 5).map((issue: any) => {
+                                        {statistics.issues.slice(0, 5).map((issue: any) => {
                       const book = statistics.books.find((b: any) => b.id === issue.bookId);
                       const student = statistics.students.find((s: any) => s.id === issue.studentId);
-                      const institution = statistics.institutions.find((i: any) => i.id === issue.institutionId);
                       
-                                             return (
-                         <div key={issue.id} className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-md hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+                      // Enhanced institution/library lookup with string comparison
+                      let institutionName = 'Unknown Institution';
+                      const institution = statistics.institutions.find((i: any) => String(i.id) === String(issue.institutionId));
+                      if (institution) {
+                        institutionName = institution.name;
+                      } else {
+                        const library = statistics.privateLibraries.find((l: any) => String(l.id) === String(issue.institutionId));
+                        if (library) {
+                          institutionName = library.name;
+                        }
+                      }
+                      
+                      return (
+                        <div key={issue.id} className="flex items-center justify-between p-3 bg-white rounded-lg border hover:shadow-md hover:bg-gray-50 transition-all duration-200 cursor-pointer">
                           <div>
                             <p className="font-medium text-gray-900">{book?.title}</p>
-                            <p className="text-sm text-gray-600">{student?.name} • {institution?.name || 'Unknown Institution'}</p>
+                            <p className="text-sm text-gray-600">{student?.name} • {institutionName}</p>
                           </div>
                           <div className="text-right">
                             <p className="text-sm text-gray-500">Due: {issue.dueDate}</p>
