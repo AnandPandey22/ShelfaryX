@@ -14,6 +14,8 @@ const IssueBook: React.FC = () => {
   const [issueDate, setIssueDate] = useState('');
   const [dueDate, setDueDate] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   const [searchingBooks, setSearchingBooks] = useState(false);
   const [searchingStudents, setSearchingStudents] = useState(false);
   const [issuing, setIssuing] = useState(false);
@@ -96,6 +98,28 @@ const IssueBook: React.FC = () => {
 
   const handleIssueBook = async () => {
     if (selectedBook && selectedStudent && currentUser && issueDate && dueDate) {
+      // Check if student already has 5 books issued
+      const studentActiveIssues = issues.filter(issue => 
+        issue.studentId === selectedStudent && 
+        (issue.status === 'issued' || issue.status === 'overdue')
+      );
+      
+      if (studentActiveIssues.length >= 5) {
+        setErrorMessage('This student has already borrowed 5 books. Please return at least one book before issuing a new one.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 5000);
+        return;
+      }
+      
+      // Check if student already has this specific book
+      const alreadyHasThisBook = studentActiveIssues.some(issue => issue.bookId === selectedBook);
+      if (alreadyHasThisBook) {
+        setErrorMessage('This student has already borrowed this book. Please select a different book.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 5000);
+        return;
+      }
+      
       setIssuing(true);
       try {
         await issueBook({
@@ -132,14 +156,32 @@ const IssueBook: React.FC = () => {
         setTimeout(() => setShowSuccess(false), 3000);
       } catch (error) {
         console.error('Error issuing book:', error);
-        alert('Error issuing book. Please try again.');
+        setErrorMessage('Error issuing book. Please try again.');
+        setShowError(true);
+        setTimeout(() => setShowError(false), 5000);
       } finally {
         setIssuing(false);
       }
     }
   };
 
-  const canIssue = selectedBook && selectedStudent && selectedBookData && selectedBookData.availableCopies > 0 && issueDate && dueDate;
+  // Check if student has reached the 5-book limit
+  const studentActiveIssues = selectedStudent ? issues.filter(issue => 
+    issue.studentId === selectedStudent && 
+    (issue.status === 'issued' || issue.status === 'overdue')
+  ) : [];
+  
+  const hasReachedLimit = studentActiveIssues.length >= 5;
+  const alreadyHasThisBook = selectedBook && studentActiveIssues.some(issue => issue.bookId === selectedBook);
+  
+  const canIssue = selectedBook && 
+                   selectedStudent && 
+                   selectedBookData && 
+                   selectedBookData.availableCopies > 0 && 
+                   issueDate && 
+                   dueDate && 
+                   !hasReachedLimit && 
+                   !alreadyHasThisBook;
 
   if (loading) {
     return (
@@ -157,6 +199,12 @@ const IssueBook: React.FC = () => {
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Issue Book</h1>
         <p className="text-gray-600 mt-2">Issue books to registered students</p>
+        <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+          <p className="text-sm text-blue-800">
+            📚 <strong>Book Limit Policy:</strong> Each student can borrow a maximum of 5 different books at a time. 
+            Students must return at least one book before borrowing a new one.
+          </p>
+        </div>
       </div>
 
       {showSuccess && (
@@ -164,6 +212,15 @@ const IssueBook: React.FC = () => {
           <div className="flex items-center space-x-2">
           <CheckCircle className="w-5 h-5 text-green-600" />
           <span className="text-green-800 font-medium">Book issued successfully!</span>
+          </div>
+        </div>
+      )}
+
+      {showError && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-5 h-5 text-red-600">⚠️</div>
+            <span className="text-red-800 font-medium">{errorMessage}</span>
           </div>
         </div>
       )}
@@ -266,23 +323,41 @@ const IssueBook: React.FC = () => {
                 {!studentSearch.trim() && (
                   <p className="text-sm text-gray-500 mb-2">👥 Top 5 most active students:</p>
                 )}
-            {studentResults.map((student) => (
-              <div
-                key={student.id}
-                onClick={() => setSelectedStudent(student.id)}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                  selectedStudent === student.id 
-                        ? 'border-indigo-500 bg-indigo-50'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                    }`}
-              >
+            {studentResults.map((student) => {
+              const studentBookCount = issues.filter(issue => 
+                issue.studentId === student.id && 
+                (issue.status === 'issued' || issue.status === 'overdue')
+              ).length;
+              
+              return (
+                <div
+                  key={student.id}
+                  onClick={() => setSelectedStudent(student.id)}
+                  className={`p-3 border rounded-lg cursor-pointer transition-colors ${
+                    selectedStudent === student.id 
+                      ? 'border-indigo-500 bg-indigo-50'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className="flex justify-between items-start">
                     <div>
-                    <h3 className="font-medium text-gray-900">{student.name}</h3>
+                      <h3 className="font-medium text-gray-900">{student.name}</h3>
                       <p className="text-sm text-gray-600">ID: {student.studentId}</p>
                       <p className="text-xs text-gray-500">{student.class} - {student.section}</p>
+                    </div>
+                    <div className={`text-xs px-2 py-1 rounded-full ${
+                      studentBookCount >= 5 
+                        ? 'bg-red-100 text-red-800' 
+                        : studentBookCount >= 3 
+                        ? 'bg-yellow-100 text-yellow-800' 
+                        : 'bg-green-100 text-green-800'
+                    }`}>
+                      {studentBookCount}/5 books
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
               </div>
             )}
             
@@ -294,6 +369,14 @@ const IssueBook: React.FC = () => {
                   <p><span className="font-medium">Student ID:</span> {selectedStudentData.studentId}</p>
                   <p><span className="font-medium">Class:</span> {selectedStudentData.class}</p>
                   <p><span className="font-medium">Section:</span> {selectedStudentData.section}</p>
+                  <p className={`font-medium ${hasReachedLimit ? 'text-red-600' : 'text-gray-700'}`}>
+                    Books Borrowed: {studentActiveIssues.length}/5
+                  </p>
+                  {hasReachedLimit && (
+                    <p className="text-red-600 text-xs mt-1">
+                      ⚠️ Student has reached the maximum limit of 5 books
+                    </p>
+                  )}
                 </div>
               </div>
             )}
