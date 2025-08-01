@@ -141,6 +141,22 @@ export const LibraryProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const issueBook = async (issue: Omit<BookIssue, 'id' | 'institutionId'>) => {
     if (!entityId) throw new Error('No entity ID');
     
+    // Check if student already has 5 books issued
+    const studentActiveIssues = issues.filter(issueItem => 
+      issueItem.studentId === issue.studentId && 
+      (issueItem.status === 'issued' || issueItem.status === 'overdue')
+    );
+    
+    if (studentActiveIssues.length >= 5) {
+      throw new Error('This student has already borrowed 5 books. Please return at least one book before issuing a new one.');
+    }
+    
+    // Check if student already has this specific book
+    const alreadyHasThisBook = studentActiveIssues.some(issueItem => issueItem.bookId === issue.bookId);
+    if (alreadyHasThisBook) {
+      throw new Error('This student has already borrowed this book. Please select a different book.');
+    }
+    
     const issueWithInstitution = { ...issue, institutionId: entityId };
     const newIssue = await issueService.issueBook(issueWithInstitution, entityId);
     setIssues(prev => [...prev, newIssue]);
