@@ -64,7 +64,7 @@ A comprehensive library management system built with React, TypeScript, and Supa
 1. **Clone the repository**
    ```bash
    git clone https://github.com/yourusername/bookzone.git
-   cd bookzone
+   cd shelfaryx
    ```
 
 2. **Install dependencies**
