@@ -34,8 +34,8 @@ export const passwordResetService = {
         email: data.email,
         reset_link: resetLink,
         user_type: data.userType,
-        from_name: 'BookZone Team',
-        message: `Hello! You requested a password reset for your BookZone account. Click the link below to reset your password: ${resetLink} This link will expire in 24 hours. If you did not request this, please ignore this email.`
+        from_name: 'ShelfaryX Team',
+        message: `Hello! You requested a password reset for your ShelfaryX account. Click the link below to reset your password: ${resetLink} This link will expire in 24 hours. If you did not request this, please ignore this email.`
       };
 
       // Send email using EmailJS with your service and template IDs
@@ -163,7 +163,7 @@ function generateResetEmailHTML(data: PasswordResetData, resetLink: string): str
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Reset Your BookZone Password</title>
+      <title>Reset Your ShelfaryX Password</title>
       <style>
         body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
         .container { max-width: 600px; margin: 0 auto; padding: 20px; }
@@ -177,14 +177,14 @@ function generateResetEmailHTML(data: PasswordResetData, resetLink: string): str
     <body>
       <div class="container">
         <div class="header">
-          <h1>📚 BookZone</h1>
+          <h1>📚 ShelfaryX</h1>
           <p>Password Reset Request</p>
         </div>
         
         <div class="content">
           <h2>Hello ${data.userName || 'there'}!</h2>
           
-          <p>We received a request to reset your password for your BookZone account.</p>
+          <p>We received a request to reset your password for your ShelfaryX account.</p>
           
           <p>If you didn't make this request, you can safely ignore this email.</p>
           
@@ -204,12 +204,12 @@ function generateResetEmailHTML(data: PasswordResetData, resetLink: string): str
           <p>If the button doesn't work, copy and paste this link into your browser:</p>
           <p style="word-break: break-all; color: #667eea;">${resetLink}</p>
           
-          <p>Best regards,<br>The BookZone Team</p>
+          <p>Best regards,<br>The ShelfaryX Team</p>
         </div>
         
         <div class="footer">
           <p>This email was sent to ${data.email}</p>
-          <p>© 2025 BookZone Library. All rights reserved.</p>
+          <p>© 2025 ShelfaryX Library. All rights reserved.</p>
         </div>
       </div>
     </body>
