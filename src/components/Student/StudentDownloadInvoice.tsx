@@ -60,7 +60,7 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
 
     try {
       // Get institution/private library details for issuer information
-      let issuerEmail = 'ShelfaryX@outlook.com';
+      let issuerEmail = 'shelfaryx@outlook.com';
       let issuerPhone = '+91-9878955679';
       let issuerName = 'ShelfaryX';
       
@@ -92,13 +92,13 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       // Header Section
       doc.setFontSize(24);
       doc.setTextColor(59, 130, 246); // Blue color
-      doc.text('ShelfaryX', 105, 20, { align: 'center' });
+      doc.text(issuerName, 105, 20, { align: 'center' });
       
-      doc.setFontSize(12);
+      doc.setFontSize(13);
       doc.setTextColor(107, 114, 128); // Gray color
       doc.text('Your Path to Success', 105, 29, { align: 'center' });
       
-      doc.setFontSize(10);
+      doc.setFontSize(11);
       doc.text(issuerEmail, 105, 36, { align: 'center' });
       doc.text(issuerPhone, 105, 43, { align: 'center' });
       
@@ -195,7 +195,7 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       
       doc.text('Category', 25, 226);
       doc.text(book.category || 'N/A', 100, 226);
-
+      
       // Add Powered by ShelfaryX footer
       doc.setFontSize(10);
       doc.setTextColor(128, 128, 128); // Gray color
@@ -462,6 +462,5 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
     </div>
   );
 };
-
 
 export default StudentDownloadInvoice; 
