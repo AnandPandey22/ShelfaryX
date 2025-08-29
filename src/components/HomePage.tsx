@@ -16,7 +16,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
               <div className="p-2 bg-indigo-600 rounded-lg">
                 <Library className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-indigo-900">BookZone</h1>
+              <h1 className="text-2xl font-bold text-indigo-900">ShelfaryX</h1>
             </div>
                         <button
               onClick={onLoginClick}
@@ -36,7 +36,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
               <Library className="w-10 h-10 text-white" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold text-indigo-900 mb-6">
-              Welcome to <span className="text-indigo-600">BookZone</span>
+              Welcome to <span className="text-indigo-600">ShelfaryX</span>
             </h1>
             <p className="text-xl text-gray-600 font-medium mb-4">A Library Management System</p>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
@@ -73,7 +73,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
       <section id="why-choose-bookzone" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-indigo-900 mb-4">Why Choose BookZone?</h2>
+            <h2 className="text-4xl font-bold text-indigo-900 mb-4">Why Choose ShelfaryX?</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               We're more than just a library. We're a community of learners, dreamers, and achievers.
             </p>
@@ -268,7 +268,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
                   </div>
                   <div>
                     <h4 className="text-lg font-semibold text-indigo-900 mb-1">Visit Us</h4>
-                    <p className="text-gray-600">BookZone Library</p>
+                    <p className="text-gray-600">ShelfaryX Library</p>
                     <p className="text-sm text-gray-500">New Delhi, India</p>
                   </div>
                 </div>
@@ -406,7 +406,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
               <div className="p-2 bg-white rounded-lg">
                 <Library className="w-6 h-6 text-indigo-900" />
               </div>
-              <h3 className="text-2xl font-bold">BookZone</h3>
+              <h3 className="text-2xl font-bold">ShelfaryX</h3>
             </div>
             <p className="text-indigo-200 mb-6 max-w-2xl mx-auto">
               Empowering students through knowledge, one book at a time. Join our community of learners and discover the endless possibilities that await you.
@@ -419,7 +419,7 @@ const HomePage: React.FC<HomePageProps> = ({ onLoginClick }) => {
             
             <div className="border-t border-indigo-800 pt-6">
               <p className="text-indigo-300">
-                © 2025 BookZone Library. All rights reserved.
+                © 2025 ShelfaryX Library. All rights reserved.
               </p>
             </div>
           </div>
