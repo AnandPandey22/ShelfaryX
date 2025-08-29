@@ -510,7 +510,7 @@ const StudentForm: React.FC<StudentFormProps> = ({
 const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
   const [userType, setUserType] = useState<'institution' | 'student' | 'privateLibrary' | null>(() => {
     // Initialize from localStorage to persist state on refresh
-    const savedUserType = localStorage.getItem('bookzone_register_userType');
+    const savedUserType = localStorage.getItem('ShelfaryX_register_userType');
     return savedUserType as 'institution' | 'student' | 'privateLibrary' | null;
   });
   const [loading, setLoading] = useState(false);
@@ -559,9 +559,9 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
   // Save userType to localStorage whenever it changes
   useEffect(() => {
     if (userType) {
-      localStorage.setItem('bookzone_register_userType', userType);
+      localStorage.setItem('ShelfaryX_register_userType', userType);
     } else {
-      localStorage.removeItem('bookzone_register_userType');
+      localStorage.removeItem('ShelfaryX_register_userType');
     }
   }, [userType]);
 
@@ -759,7 +759,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
               <div className="p-2 bg-indigo-600 rounded-lg">
                 <Library className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-indigo-900">BookZone</h1>
+              <h1 className="text-2xl font-bold text-indigo-900">ShelfaryX</h1>
             </div>
             <button
               onClick={handleBackClick}
@@ -780,7 +780,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
               <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
                 <Library className="w-8 h-8 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">BookZone</h1>
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">ShelfaryX</h1>
               <p className="text-gray-600">Create your account</p>
             </div>
 
@@ -904,7 +904,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
               <div className="p-2 bg-white rounded-lg">
                 <Library className="w-6 h-6 text-indigo-900" />
               </div>
-              <h3 className="text-2xl font-bold">BookZone</h3>
+              <h3 className="text-2xl font-bold">ShelfaryX</h3>
             </div>
             <p className="text-indigo-200 mb-6 max-w-2xl mx-auto">
               Empowering students through knowledge, one book at a time. Join our community of learners and discover the endless possibilities that await you.
@@ -917,7 +917,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
             
             <div className="border-t border-indigo-800 pt-6">
               <p className="text-indigo-300">
-                © 2025 BookZone Library. All rights reserved.
+                © 2025 ShelfaryX Library. All rights reserved.
               </p>
             </div>
           </div>
@@ -928,3 +928,4 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onBackClick }) => {
 };
 
 export default RegisterForm; 
+
