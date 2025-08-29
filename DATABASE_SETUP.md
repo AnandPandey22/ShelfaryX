@@ -1,4 +1,4 @@
-# Database Setup Guide for BookZone Library Management System
+# Database Setup Guide for ShelfaryX Library Management System
 
 ## 🗄️ **Database Solution: Supabase (PostgreSQL)**
 
@@ -213,4 +213,4 @@ Once set up:
 - **Real-time updates** across all users
 - **Professional library management** system
 
-Your BookZone library management system will now be a fully functional, professional application! 🎉 
+Your ShelfaryX library management system will now be a fully functional, professional application! 🎉 

@@ -1,7 +1,7 @@
-# 🚀 Netlify Deployment Guide for BookZone
+# 🚀 Netlify Deployment Guide for ShelfaryX
 
 ## 📋 Prerequisites
-- ✅ BookZone project is working locally
+- ✅ ShelfaryX project is working locally
 - ✅ Supabase project is set up and working
 - ✅ Git repository is ready
 
@@ -27,7 +27,7 @@ Make sure everything works in the production build.
 3. Click "New site from Git"
 
 ### 2.2 Choose Your Repository
-1. Select your BookZone repository
+1. Select your ShelfaryX repository
 2. Choose the branch (usually `main` or `master`)
 
 ### 2.3 Configure Build Settings
