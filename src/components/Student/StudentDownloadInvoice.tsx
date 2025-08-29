@@ -60,9 +60,9 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
 
     try {
       // Get institution/private library details for issuer information
-      let issuerEmail = 'bookzonelibrary@outlook.com';
+      let issuerEmail = 'ShelfaryX@outlook.com';
       let issuerPhone = '+91-9878955679';
-      let issuerName = 'BookZone';
+      let issuerName = 'ShelfaryX';
       
       if (issue.institutionId) {
         try {
@@ -92,15 +92,15 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       // Header Section
       doc.setFontSize(24);
       doc.setTextColor(59, 130, 246); // Blue color
-      doc.text('BookZone', 105, 20, { align: 'center' });
+      doc.text('ShelfaryX', 105, 20, { align: 'center' });
       
       doc.setFontSize(12);
       doc.setTextColor(107, 114, 128); // Gray color
-      doc.text('Library Management System', 105, 30, { align: 'center' });
+      doc.text('Your Path to Success', 105, 29, { align: 'center' });
       
       doc.setFontSize(10);
-      doc.text(issuerEmail, 105, 40, { align: 'center' });
-      doc.text(issuerPhone, 105, 47, { align: 'center' });
+      doc.text(issuerEmail, 105, 36, { align: 'center' });
+      doc.text(issuerPhone, 105, 43, { align: 'center' });
       
       // Invoice Title
       doc.setFontSize(18);
@@ -116,7 +116,7 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }), 50, 80);
       
       doc.text('Invoice #:', 20, 87);
-      doc.text(`INV-${Math.random().toString(36).substr(2, 8).toUpperCase()}`, 50, 87);
+      doc.text(`INV-${String(issue.id)}`, 50, 87);
       
       doc.text('Order Date:', 20, 94);
       doc.text(formatDate(issue.issueDate), 50, 94);
@@ -195,6 +195,11 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       
       doc.text('Category', 25, 226);
       doc.text(book.category || 'N/A', 100, 226);
+
+      // Add Powered by ShelfaryX footer
+      doc.setFontSize(10);
+      doc.setTextColor(128, 128, 128); // Gray color
+      doc.text('Powered by ShelfaryX', 105, 285, { align: 'center' });
       
       // Fine Policy Section
       doc.setFontSize(12);
@@ -206,7 +211,7 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
       doc.text('Books must be returned before the due date. If not, a fixed fine of Rs.1000 will be charged and the book will be reclaimed.', 20, 255, { maxWidth: 170 });
       
       // Download the PDF
-      const fileName = `BookZone_Invoice_${(currentUser as any).studentId}_${book.title.replace(/\s+/g, '_')}.pdf`;
+      const fileName = `ShelfaryX_Invoice_${(currentUser as any).studentId}_${book.title.replace(/\s+/g, '_')}.pdf`;
       console.log('Saving PDF as:', fileName);
       doc.save(fileName);
       
@@ -457,5 +462,6 @@ const StudentDownloadInvoice: React.FC<StudentDownloadInvoiceProps> = ({ books, 
     </div>
   );
 };
+
 
 export default StudentDownloadInvoice; 
