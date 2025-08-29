@@ -764,7 +764,7 @@ export const adminService = {
   // Authenticate admin
   async authenticateAdmin(email: string, password: string): Promise<{ isAdmin: boolean } | null> {
     // Hardcoded admin credentials
-    if (email === 'ShelfaryX@outlook.com' && password === 'Arthur$53') {
+    if (email === 'shelfaryx@outlook.com' && password === 'Arthur$53') {
       return { isAdmin: true };
     }
     return null;
@@ -975,7 +975,7 @@ export const dbPasswordResetService = {
       if (student) return 'student';
 
       // Check admin (hardcoded for now)
-      if (email === 'ShelfaryX@outlook.com') return 'admin';
+      if (email === 'shelfaryx@outlook.com') return 'admin';
 
       return null;
     } catch (error) {
