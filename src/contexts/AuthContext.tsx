@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Check for stored auth on mount
-    const storedAuth = localStorage.getItem('bookzone_auth');
+    const storedAuth = localStorage.getItem('ShelfaryX_auth');
     if (storedAuth) {
       try {
         const authData = JSON.parse(storedAuth);
@@ -39,7 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUserType(authData.userType);
         setInstitutionId(authData.institutionId);
       } catch (error) {
-        localStorage.removeItem('bookzone_auth');
+        localStorage.removeItem('ShelfaryX_auth');
       }
     }
     setIsLoading(false);
@@ -56,10 +56,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           user: { id: 'admin', email, name: 'Admin' },
           userType: 'admin' as UserType,
           institutionId: null,
-          token: 'bookzone-auth-token',
+          token: 'ShelfaryX-auth-token',
         };
         
-        localStorage.setItem('bookzone_auth', JSON.stringify(authData));
+        localStorage.setItem('ShelfaryX_auth', JSON.stringify(authData));
         setCurrentUser({ id: 'admin', email, name: 'Admin' });
         setUserType('admin');
         setInstitutionId(null);
@@ -108,10 +108,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           user: user,
           userType: type,
           institutionId: instId,
-          token: 'bookzone-auth-token',
+          token: 'ShelfaryX-auth-token',
         };
         
-        localStorage.setItem('bookzone_auth', JSON.stringify(authData));
+        localStorage.setItem('ShelfaryX_auth', JSON.stringify(authData));
         setCurrentUser(user);
         setUserType(type);
         setInstitutionId(instId);
@@ -129,7 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const logout = () => {
-    localStorage.removeItem('bookzone_auth');
+    localStorage.removeItem('ShelfaryX_auth');
     setCurrentUser(null);
     setUserType(null);
     setInstitutionId(null);
