@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLibrary } from '../contexts/LibraryContext';
 import { useAuth } from '../contexts/AuthContext';
-import { institutionService } from '../services/database';
+import { institutionService, privateLibraryService } from '../services/database';
 import { BookOpen, User, Calendar, Download, FileText, MapPin, Phone, Mail, Clock, AlertCircle, CheckCircle } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
@@ -53,19 +53,30 @@ const DownloadInvoice: React.FC = () => {
     }
 
     try {
-      // Get institution details for issuer information
-      let issuerEmail = 'bookzonelibrary@outlook.com';
+      // Get institution/private library details for issuer information
+      let issuerEmail = 'shelfaryx@outlook.com';
       let issuerPhone = '+91-9878955679';
+      let issuerName = currentUser?.name || 'Library';
       
       if (issue.institutionId) {
         try {
+          // First try to get institution details
           const institution = await institutionService.getInstitutionById(issue.institutionId);
           if (institution) {
             issuerEmail = institution.email;
             issuerPhone = institution.phone;
+            issuerName = institution.name;
+          } else {
+            // If not found in institutions, try private libraries
+            const privateLibrary = await privateLibraryService.getPrivateLibraryById(issue.institutionId);
+            if (privateLibrary) {
+              issuerEmail = privateLibrary.email;
+              issuerPhone = privateLibrary.phone;
+              issuerName = privateLibrary.name;
+            }
           }
         } catch (error) {
-          console.warn('Could not fetch institution details:', error);
+          console.warn('Could not fetch institution/private library details:', error);
         }
       }
 
@@ -75,15 +86,15 @@ const DownloadInvoice: React.FC = () => {
       // Header Section
       doc.setFontSize(24);
       doc.setTextColor(59, 130, 246); // Blue color
-      doc.text('BookZone', 105, 20, { align: 'center' });
+      doc.text(currentUser?.name || issuerName || 'Library', 105, 20, { align: 'center' });
       
-      doc.setFontSize(12);
+      doc.setFontSize(13);
       doc.setTextColor(107, 114, 128); // Gray color
-      doc.text('Library Management System', 105, 30, { align: 'center' });
+      doc.text('Your Path to Success', 105, 29, { align: 'center' });
       
-      doc.setFontSize(10);
-      doc.text('bookzonelibrary@outlook.com', 105, 40, { align: 'center' });
-      doc.text('+91-9878955679', 105, 47, { align: 'center' });
+      doc.setFontSize(11);
+      doc.text(issuerEmail, 105, 36, { align: 'center' });
+      doc.text(issuerPhone, 105, 43, { align: 'center' });
       
       // Invoice Title
       doc.setFontSize(18);
@@ -99,7 +110,7 @@ const DownloadInvoice: React.FC = () => {
       doc.text(new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }), 50, 80);
       
       doc.text('Invoice #:', 20, 87);
-      doc.text(`INV-${Math.random().toString(36).substr(2, 8).toUpperCase()}`, 50, 87);
+      doc.text(`INV-${String(issue.id)}`, 50, 87);
       
       doc.text('Order Date:', 20, 94);
       doc.text(formatDate(issue.issueDate), 50, 94);
@@ -115,7 +126,7 @@ const DownloadInvoice: React.FC = () => {
       doc.text(formatDate(issue.dueDate), 150, 87);
       
       doc.text('Issued By:', 120, 94);
-      doc.text(currentUser?.name || 'BookZone', 150, 94);
+      doc.text(currentUser?.name || 'ShelfaryX', 150, 94);
 
       doc.text('Issuer Email:', 120, 101);
       doc.text(issuerEmail, 150, 101);
@@ -166,6 +177,11 @@ const DownloadInvoice: React.FC = () => {
       doc.text('Field', 25, 191);
       doc.text('Details', 100, 191);
       
+      // Add Powered by ShelfaryX footer
+      doc.setFontSize(10);
+      doc.setTextColor(128, 128, 128); // Gray color
+      doc.text('Powered by ShelfaryX', 105, 285, { align: 'center' });
+      
       // Book data rows
       doc.text('Title', 25, 205);
       doc.text(book.title, 100, 205);
@@ -189,7 +205,7 @@ const DownloadInvoice: React.FC = () => {
       doc.text('Books must be returned before the due date. If not, a fixed fine of Rs.1000 will be charged and the book will be reclaimed.', 20, 255, { maxWidth: 170 });
       
       // Download the PDF
-      const fileName = `BookZone_Invoice_${student.studentId}_${book.title.replace(/\s+/g, '_')}.pdf`;
+      const fileName = `ShelfaryX_Invoice_${student.studentId}_${book.title.replace(/\s+/g, '_')}.pdf`;
       console.log('Saving PDF as:', fileName);
       doc.save(fileName);
       
