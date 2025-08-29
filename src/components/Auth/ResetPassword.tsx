@@ -102,7 +102,7 @@ const ResetPassword: React.FC = () => {
             <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
               <Library className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">BookZone</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">ShelfaryX</h1>
             <p className="text-gray-600">Validating reset link...</p>
             <div className="mt-6">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
@@ -171,7 +171,7 @@ const ResetPassword: React.FC = () => {
               <div className="p-2 bg-indigo-600 rounded-lg">
                 <Library className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-indigo-900">BookZone</h1>
+              <h1 className="text-2xl font-bold text-indigo-900">ShelfaryX</h1>
             </div>
             <button
               onClick={handleBackToLogin}
@@ -280,5 +280,6 @@ const ResetPassword: React.FC = () => {
     </div>
   );
 };
+
 
 export default ResetPassword; 
