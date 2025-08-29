@@ -12,7 +12,7 @@ const MobileWelcome: React.FC = () => {
         
         {/* Welcome Message */}
         <h1 className="text-3xl font-bold text-indigo-900 mb-4">
-          Welcome to <span className="text-indigo-600">BookZone</span>
+          Welcome to <span className="text-indigo-600">ShelfaryX</span>
         </h1>
         <p className="text-lg text-gray-600 font-medium mb-4">
           A Library Management System
@@ -23,7 +23,7 @@ const MobileWelcome: React.FC = () => {
         
         {/* Instructions - Plain text */}
         <p className="text-lg text-gray-600 font-medium">
-          Click on the menu button to access the features of BookZone.
+          Click on the menu button to access the features of ShelfaryX.
         </p>
       </div>
     </div>
