@@ -18,7 +18,7 @@ const AdminMobileHeader: React.FC<AdminMobileHeaderProps> = ({ onMenuClick }) =>
           
           {/* Text */}
           <div>
-            <h1 className="text-lg font-bold text-blue-900">BookZone</h1>
+            <h1 className="text-lg font-bold text-blue-900">ShelfaryX</h1>
             <p className="text-xs text-gray-500">Admin Portal</p>
           </div>
         </div>
