@@ -84,7 +84,7 @@ const AppContent: React.FC = () => {
   const [showWelcomeMessage, setShowWelcomeMessage] = useState(false);
   const [showRegisterForm, setShowRegisterForm] = useState(() => {
     // Initialize from localStorage to persist state on refresh
-    return localStorage.getItem('bookzone_show_register_form') === 'true';
+    return localStorage.getItem('ShelfaryX_show_register_form') === 'true';
   });
 
   // Check if we're on reset password page
@@ -102,9 +102,9 @@ const AppContent: React.FC = () => {
   // Save register form state to localStorage
   useEffect(() => {
     if (showRegisterForm) {
-      localStorage.setItem('bookzone_show_register_form', 'true');
+      localStorage.setItem('ShelfaryX_show_register_form', 'true');
     } else {
-      localStorage.removeItem('bookzone_show_register_form');
+      localStorage.removeItem('ShelfaryX_show_register_form');
     }
   }, [showRegisterForm]);
 
