@@ -1,4 +1,4 @@
-# 📚 BookZone - Library Management System
+# 📚 ShelfaryX - Library Management System
 
 A comprehensive library management system built with React, TypeScript, and Supabase. Features multi-institution support, student portals, admin panels, and real-time email notifications.
 
